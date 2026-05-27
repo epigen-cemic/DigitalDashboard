@@ -1,0 +1,852 @@
+/* =============================================================================
+   Unified RAP Dashboard Theme
+   -----------------------------------------------------------------------------
+   This stylesheet is organized so most visual decisions can be changed from the
+   GLOBAL STYLES & VARIABLES section.
+
+   Editing priority:
+   1. Change colors, fonts, spacing, radii, and shadows in :root.
+   2. Avoid hard-coded colors in later sections unless they are one-off states.
+   3. Keep component sections focused on layout and behavior.
+   ============================================================================= */
+
+
+/* =============================================================================
+   1. GLOBAL STYLES & VARIABLES
+   ============================================================================= */
+
+:root {
+  /* ---------------------------------------------------------------------------
+     Brand colors
+     --------------------------------------------------------------------------- */
+  --color-brand-dark: #1E2A15;          /* Main dark olive / top bar */
+  --color-brand-dark-2: #324027;        /* Sidebar / darker hover */
+  --color-brand-sage: #48563F;          /* Hero / primary action */
+  --color-brand-sage-soft: #5B6D5B;     /* Legacy sage fallback */
+  --color-brand-orange: #F69342;        /* Accent / highlights */
+
+  /* ---------------------------------------------------------------------------
+     Neutral colors
+     --------------------------------------------------------------------------- */
+  --color-white: #FFFFFF;
+  --color-black: #000000;
+  --color-page-bg: #F8F5F1;
+  --color-card-bg: #FFFFFF;
+  --color-border: #E5E2DC;
+  --color-border-strong: #C9C2B8;
+  --color-text: #333333;
+  --color-text-muted: #666666;
+  --color-text-light: #F0F0F0;
+  --color-sidebar-muted: #D8E3D1;
+
+  /* ---------------------------------------------------------------------------
+     State colors
+     --------------------------------------------------------------------------- */
+  --color-error-bg: #FFE5E5;
+  --color-error-border: #A30000;
+  --color-error-text: #8A0000;
+  --color-danger: #A94442;
+  --color-danger-hover: #843534;
+  --color-disabled-bg: #E0E0E0;
+  --color-disabled-border: #CCCCCC;
+  --color-disabled-text: #999999;
+
+  /* ---------------------------------------------------------------------------
+     Typography
+     --------------------------------------------------------------------------- */
+  --font-family-base: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-title: 24px;
+  --font-size-hero: 28px;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --font-weight-extra-bold: 800;
+
+  /* ---------------------------------------------------------------------------
+     Spacing
+     --------------------------------------------------------------------------- */
+  --space-xxs: 4px;
+  --space-xs: 6px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 14px;
+  --space-xl: 18px;
+  --space-2xl: 20px;
+  --space-3xl: 24px;
+  --space-4xl: 30px;
+  --space-page-x: 40px;
+
+  /* ---------------------------------------------------------------------------
+     Layout sizes
+     --------------------------------------------------------------------------- */
+  --topbar-height: 50px;
+  --logo-width: 180px;
+  --logo-height: 30px;
+  --dashboard-min-height: 720px;
+  --well-min-height: 600px;
+
+  /* ---------------------------------------------------------------------------
+     Radius and shadows
+     --------------------------------------------------------------------------- */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.10);
+  --shadow-md: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.08);
+  --shadow-menu: 0 2px 5px rgba(0, 0, 0, 0.10);
+  --shadow-dropdown: 0 8px 16px rgba(0, 0, 0, 0.40);
+
+  /* ---------------------------------------------------------------------------
+     Backward-compatible aliases
+     Keep these because older modules may still reference them.
+     --------------------------------------------------------------------------- */
+  --nav-bg-color: var(--color-brand-dark);
+  --hero-bg-color: var(--color-brand-sage);
+  --menu-opaque-green: rgba(72, 86, 63, 0.94);
+  --sidebar-bg: var(--color-brand-dark-2);
+  --bg-light: var(--color-page-bg);
+  --accent-orange: var(--color-brand-orange);
+}
+
+
+/* =============================================================================
+   2. BASE DOCUMENT STYLES
+   ============================================================================= */
+
+::selection {
+  background-color: var(--color-white) !important;
+  color: var(--color-black) !important;
+}
+
+body {
+  margin: 0 !important;
+  background-color: var(--color-page-bg);
+  color: var(--color-text);
+  font-family: var(--font-family-base);
+}
+
+.container-fluid {
+  padding: 0 !important;
+}
+
+
+/* =============================================================================
+   3. THREE-TIER HEADER
+   ============================================================================= */
+
+/* Tier 1: top brand bar */
+.nav-bar {
+  background-color: var(--color-brand-dark);
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-page-x);
+  width: 100%;
+}
+
+.header-logo-left {
+  height: var(--logo-height);
+  width: var(--logo-width);
+  background-image: url("AnalysisforAction_white.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: left center;
+}
+
+/* Tier 2: hero title section */
+.hero-section {
+  background-color: var(--color-brand-sage);
+  padding: var(--space-4xl) var(--space-page-x);
+}
+
+.app-title {
+  color: var(--color-white) !important;
+  font-size: var(--font-size-hero);
+  font-weight: 300;
+  margin: 0 !important;
+  letter-spacing: 1px;
+}
+
+/* Tier 3: navigation menu */
+.menu-bar-tier {
+  background-color: var(--menu-opaque-green);
+  padding: 0 var(--space-page-x);
+  border-bottom: 2px solid var(--color-brand-dark);
+  box-shadow: var(--shadow-menu);
+}
+
+.custom-navbar {
+  display: flex !important;
+  gap: 0;
+}
+
+.custom-navbar a,
+.unified-navbar a,
+.unified-navbar .nav-link-like {
+  color: var(--color-white) !important;
+  text-decoration: none !important;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  padding: 12px 20px;
+  display: inline-block;
+  transition: background-color 0.2s;
+}
+
+.unified-navbar a,
+.unified-navbar .nav-link-like {
+  padding: 15px 18px;
+}
+
+.custom-navbar a:hover,
+.unified-navbar a:hover,
+.unified-navbar .nav-link-like:hover {
+  background-color: rgba(246, 147, 66, 0.25);
+  color: var(--color-white) !important;
+  text-decoration: none !important;
+}
+
+
+/* =============================================================================
+   4. NAVIGATION DROPDOWNS
+   ============================================================================= */
+
+.custom-navbar .dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-navbar .dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--color-brand-dark);
+  min-width: 220px;
+  z-index: 1000;
+  box-shadow: var(--shadow-dropdown);
+  left: 0;
+  top: 100%;
+}
+
+/* Invisible bridge prevents dropdown from closing while cursor crosses a gap. */
+.custom-navbar .dropdown-content::before {
+  content: "";
+  position: absolute;
+  top: -15px;
+  left: 0;
+  right: 0;
+  height: 15px;
+  background: transparent;
+}
+
+.custom-navbar .dropdown-content a {
+  color: var(--color-white) !important;
+  padding: 12px 16px;
+  display: block;
+  border-bottom: 1px solid #3D443A;
+  width: 100%;
+}
+
+.custom-navbar .dropdown-content a:hover {
+  background-color: #3D443A !important;
+}
+
+.custom-navbar .dropdown:hover .dropdown-content {
+  display: block;
+}
+
+
+/* =============================================================================
+   5. PAGE LAYOUT
+   ============================================================================= */
+
+.content-wrapper {
+  padding: var(--space-2xl) var(--space-page-x);
+}
+
+.well-custom {
+  background-color: var(--color-card-bg);
+  padding: var(--space-4xl);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  min-height: var(--well-min-height);
+}
+
+.unified-dashboard-wrapper .well-custom {
+  padding: var(--space-xl);
+}
+
+.dashboard-main-panel {
+  min-height: var(--dashboard-min-height);
+}
+
+
+/* =============================================================================
+   6. SIDEBAR
+   ============================================================================= */
+
+.sidebar-dark {
+  background-color: var(--color-brand-dark-2);
+  color: var(--color-white);
+  padding: 25px;
+  border-radius: var(--radius-sm);
+  height: fit-content;
+  margin-bottom: var(--space-2xl);
+}
+
+.sidebar-dark .control-label {
+  color: var(--color-text-light) !important;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--space-sm);
+}
+
+.unified-sidebar h3 {
+  color: var(--color-white);
+  margin-top: 0;
+  font-size: var(--font-size-xl);
+}
+
+.unified-sidebar hr {
+  border-color: rgba(255, 255, 255, 0.18);
+  margin: var(--space-xl) 0;
+}
+
+.title-label {
+  color: var(--color-white);
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  padding-bottom: var(--space-xs);
+  margin-bottom: var(--space-md);
+  display: block;
+}
+
+.variable-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.sidebar-dark input {
+  background-color: var(--color-white) !important;
+  color: var(--color-text) !important;
+  border: 1px solid #CCCCCC !important;
+  border-radius: 2px;
+}
+
+.sidebar-dark .selectize-input input {
+  width: 0 !important;
+  opacity: 0 !important;
+}
+
+.input-overlay-wrapper {
+  position: relative;
+}
+
+.input-overlay-text {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-disabled-text);
+  pointer-events: none;
+  font-size: var(--font-size-xs);
+}
+
+
+/* =============================================================================
+   7. TABS
+   ============================================================================= */
+
+.main-tabs .nav-tabs {
+  border-bottom: 2px solid #DDDDDD;
+  display: flex;
+}
+
+.main-tabs .nav-tabs > li > a {
+  color: var(--color-text-muted);
+  border: none;
+  border-radius: 0;
+  padding: 10px 25px;
+  font-weight: var(--font-weight-medium);
+}
+
+.main-tabs .nav-tabs > li.active > a {
+  background-color: transparent !important;
+  color: var(--color-brand-sage) !important;
+  border-bottom: 3px solid var(--color-brand-sage) !important;
+}
+
+.main-tabs .nav-tabs > li > a:hover {
+  background-color: #EEEEEE !important;
+  color: var(--color-black) !important;
+}
+
+
+/* =============================================================================
+   8. BUTTONS
+   ============================================================================= */
+
+.btn-default {
+  background-color: #F8F9FA;
+  border: 1px solid #DDDDDD;
+  transition: all 0.2s;
+}
+
+.btn-default:hover {
+  background-color: var(--color-brand-dark) !important;
+  color: var(--color-white) !important;
+  border-color: var(--color-brand-dark) !important;
+}
+
+/* Legacy Bootstrap action buttons */
+.btn-info,
+.btn-warning,
+.btn-primary {
+  background-color: var(--color-brand-sage) !important;
+  color: var(--color-white) !important;
+  border: 1px solid var(--color-brand-sage) !important;
+  transition: all 0.2s;
+}
+
+.btn-info:hover,
+.btn-warning:hover,
+.btn-primary:hover {
+  background-color: var(--color-brand-dark) !important;
+  border-color: var(--color-brand-dark) !important;
+  color: var(--color-white) !important;
+}
+
+/* Explicit disabled state to avoid white/invisible disabled buttons. */
+.btn-info[disabled],
+.btn-warning[disabled],
+.btn-primary[disabled],
+.btn-default[disabled],
+.dashboard-small-button[disabled],
+.dashboard-primary-button[disabled],
+.dashboard-danger-button[disabled] {
+  background-color: var(--color-disabled-bg) !important;
+  border-color: var(--color-disabled-border) !important;
+  color: var(--color-disabled-text) !important;
+  opacity: 1 !important;
+  pointer-events: none;
+}
+
+.dashboard-small-button,
+.dashboard-primary-button,
+.dashboard-danger-button {
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-small-button {
+  padding: 5px 10px;
+  background: var(--color-page-bg);
+  color: var(--color-brand-dark);
+}
+
+.dashboard-small-button:hover,
+.dashboard-small-button:focus {
+  background: var(--color-brand-orange);
+  color: var(--color-brand-dark);
+}
+
+.dashboard-primary-button {
+  background: var(--color-brand-sage);
+  color: var(--color-white);
+}
+
+.dashboard-primary-button:hover,
+.dashboard-primary-button:focus {
+  background: var(--color-brand-dark-2);
+  color: var(--color-white);
+}
+
+.dashboard-danger-button {
+  background: var(--color-danger);
+  color: var(--color-white);
+}
+
+.dashboard-danger-button:hover,
+.dashboard-danger-button:focus {
+  background: var(--color-danger-hover);
+  color: var(--color-white);
+}
+
+.dashboard-run-btn {
+  width: 100%;
+  color: var(--color-black) !important;
+  margin-top: var(--space-xs);
+}
+
+.btn-xs {
+  padding: 4px 8px;
+  font-size: var(--font-size-xs);
+  line-height: 1.2;
+}
+
+
+/* =============================================================================
+   9. HOME AND LEGACY PAGE CARDS
+   ============================================================================= */
+
+.dashboard-home {
+  padding: 26px;
+}
+
+.tool-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-xl);
+  margin-top: var(--space-2xl);
+}
+
+.tool-card {
+  background: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(30, 42, 21, 0.16);
+  box-shadow: var(--shadow-lg);
+  padding: 22px;
+  min-height: 190px;
+}
+
+.tool-card h3 {
+  margin-top: 0;
+  color: var(--color-brand-dark);
+  font-weight: var(--font-weight-bold);
+}
+
+.tool-card p {
+  color: var(--color-text);
+  line-height: 1.45;
+}
+
+.tool-card .btn {
+  margin-top: var(--space-sm);
+}
+
+.module-title-strip {
+  background: var(--color-card-bg);
+  border-left: 6px solid var(--color-brand-orange);
+  margin-bottom: var(--space-lg);
+  padding: 12px 18px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.module-title-strip h2 {
+  margin: 0;
+  color: var(--color-brand-dark);
+  font-size: var(--font-size-title);
+  font-weight: var(--font-weight-bold);
+}
+
+
+/* =============================================================================
+   10. HELP PAGE
+   ============================================================================= */
+
+.help-page-wrapper {
+  padding: var(--space-2xl) var(--space-page-x);
+}
+
+.help-page {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.help-page h2 {
+  margin-top: 0;
+  color: var(--color-brand-dark);
+  font-weight: var(--font-weight-bold);
+}
+
+.help-page > p {
+  max-width: 900px;
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.help-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-left: 5px solid var(--color-brand-orange);
+  border-radius: var(--radius-md);
+  padding: var(--space-xl);
+  margin-top: var(--space-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.help-card h3 {
+  margin-top: 0;
+  color: var(--color-brand-dark);
+  font-weight: var(--font-weight-bold);
+}
+
+.help-card p,
+.help-card li {
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.help-card ul {
+  margin-bottom: 0;
+}
+
+.help-card a {
+  color: var(--color-brand-sage);
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+}
+
+.help-card a:hover,
+.help-card a:focus {
+  color: var(--color-brand-orange);
+  text-decoration: underline;
+}
+
+.help-link {
+  color: var(--color-brand-sage) !important;
+  font-weight: var(--font-weight-bold);
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.help-link:hover,
+.help-link:focus {
+  color: var(--color-brand-orange) !important;
+  text-decoration: underline !important;
+}
+
+.api-pop-structure-modal p {
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+.api-pop-structure-table {
+  margin-top: var(--space-md);
+}
+
+.api-pop-structure-modal pre {
+  margin-top: var(--space-sm);
+  margin-bottom: 0;
+  white-space: pre-wrap;
+  text-align: left;
+  font-size: var(--font-size-sm);
+}
+
+/* =============================================================================
+   11. SUMMARY CARDS
+   ============================================================================= */
+
+.summary-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xl);
+}
+
+.summary-card {
+  background-color: var(--color-card-bg);
+  padding: var(--space-md);
+  border-radius: var(--radius-sm);
+  min-width: 150px;
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-label {
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+}
+
+.summary-value {
+  font-size: 22px;
+  font-weight: var(--font-weight-bold);
+}
+
+.dashboard-summary {
+  margin-bottom: var(--space-lg);
+}
+
+
+/* =============================================================================
+   12. DASHBOARD OUTPUT CARDS AND MESSAGES
+   ============================================================================= */
+
+.dashboard-output-card {
+  background: var(--color-card-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-xl);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+}
+
+.output-card-title {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  margin-bottom: 10px;
+  color: var(--color-brand-dark);
+}
+
+.empty-state {
+  background: var(--color-page-bg);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  padding: var(--space-3xl);
+  margin-bottom: var(--space-xl);
+  color: var(--color-brand-dark-2);
+}
+
+.empty-state h3 {
+  margin-top: 0;
+}
+
+.dashboard-error {
+  background: var(--color-error-bg);
+  border-left: 4px solid var(--color-error-border);
+  color: var(--color-error-text);
+  padding: var(--space-sm);
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-xs);
+}
+
+.dashboard-control-strip {
+  background: var(--color-page-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-bottom: var(--space-lg);
+}
+
+.moran-banner {
+  background: #F5F5F5;
+  border-left: 5px solid #9E9E9E;
+  color: #3F3F3F;
+  padding: 10px 14px;
+  margin-bottom: var(--space-lg);
+  font-size: var(--font-size-sm);
+}
+
+
+/* =============================================================================
+   13. UPLOADED FILE MANAGER
+   ============================================================================= */
+
+.uploaded-files-summary {
+  margin-top: var(--space-md);
+  margin-bottom: var(--space-sm);
+  color: var(--color-white);
+}
+
+.uploaded-files-summary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xxs);
+}
+
+.uploaded-files-label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+}
+
+.uploaded-files-label.muted {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--color-sidebar-muted);
+}
+
+.uploaded-files-count {
+  min-width: 28px;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-brand-orange);
+  color: var(--color-brand-dark);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-extra-bold);
+  text-align: center;
+}
+
+.uploaded-files-count.active {
+  background: var(--color-sidebar-muted);
+  color: var(--color-brand-dark);
+}
+
+.uploaded-files-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.uploaded-files-table th,
+.uploaded-files-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #DDDDDD;
+  vertical-align: middle;
+}
+
+.uploaded-files-table th {
+  background: var(--color-page-bg);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+}
+
+.uploaded-files-table td {
+  color: #222222;
+}
+
+.uploaded-files-table .checkbox {
+  margin: 0;
+}
+
+.uploaded-files-table input[type="checkbox"] {
+  margin: 0;
+}
+
+
+/* =============================================================================
+   14. RESPONSIVE ADJUSTMENTS
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  :root {
+    --space-page-x: 18px;
+  }
+
+  .custom-navbar {
+    flex-wrap: wrap;
+  }
+
+  .custom-navbar a,
+  .unified-navbar a,
+  .unified-navbar .nav-link-like {
+    padding: 10px 12px;
+    font-size: var(--font-size-base);
+  }
+
+  .hero-section {
+    padding: 22px var(--space-page-x);
+  }
+
+  .app-title {
+    font-size: var(--font-size-title);
+  }
+
+  .uploaded-files-table {
+    font-size: var(--font-size-xs);
+  }
+}
+

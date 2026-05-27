@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.idea/
+*.vbs
+*.bat
+*.log
+
+# Local Shiny launchers
+run_app.R
