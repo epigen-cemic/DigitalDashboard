@@ -1,6 +1,6 @@
 dashboard_geo_server <- function(input, output, session, app_state) {
   
-  observeEvent(input$run_geo, {
+  run_dashboard_geo <- function(show_message = TRUE) {
     tryCatch({
       req(
         app_state$raw_data,
@@ -22,9 +22,25 @@ dashboard_geo_server <- function(input, output, session, app_state) {
       )
       
       wk <- as.integer(input$week_range)
+      time_mode <- if (is.null(input$time_mode)) "single" else input$time_mode
       
-      if (identical(input$time_mode, "single")) {
-        wk <- c(wk[2], wk[2])
+      if (identical(time_mode, "single")) {
+        wk <- c(wk[1], wk[1])
+      } else {
+        if (length(wk) < 2) {
+          wk <- c(wk[1], wk[1])
+        }
+        wk <- sort(wk[1:2])
+        if ((wk[2] - wk[1]) < 1L) {
+          available_wk <- available_weeks_for_year(app_state$raw_data, input$selected_year)
+          max_available_week <- suppressWarnings(max(available_wk, na.rm = TRUE))
+          min_available_week <- suppressWarnings(min(available_wk, na.rm = TRUE))
+          if (!is.na(max_available_week) && wk[2] < max_available_week) {
+            wk[2] <- wk[1] + 1L
+          } else if (!is.na(min_available_week) && wk[1] > min_available_week) {
+            wk[1] <- wk[2] - 1L
+          }
+        }
       }
       
       analysis_df <- prepare_geospatial_dataset(
@@ -80,10 +96,12 @@ dashboard_geo_server <- function(input, output, session, app_state) {
         target_var = target_var
       )
       
-      showNotification(
-        "Spatial analysis completed.",
-        type = "message"
-      )
+      if (isTRUE(show_message)) {
+        showNotification(
+          "Spatial analysis completed.",
+          type = "message"
+        )
+      }
     }, error = function(e) {
       showNotification(
         paste("Spatial analysis error:", e$message),
@@ -91,5 +109,24 @@ dashboard_geo_server <- function(input, output, session, app_state) {
         duration = 12
       )
     })
+  }
+
+  observeEvent(input$run_analysis, {
+    run_dashboard_geo(show_message = TRUE)
   })
+
+  observeEvent(
+    list(
+      input$selected_year,
+      input$week_range,
+      input$time_mode
+    ),
+    {
+      if (!isTRUE(input$reactive_display) || is.null(app_state$geo_results)) {
+        return()
+      }
+      run_dashboard_geo(show_message = FALSE)
+    },
+    ignoreInit = TRUE
+  )
 }

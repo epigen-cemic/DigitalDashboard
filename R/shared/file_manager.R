@@ -97,6 +97,8 @@ get_year_week_range <- function(dat) {
 }
 
 refresh_active_dashboard_data <- function(app_state) {
+  app_state$data_version <- as.integer(if (is.null(app_state$data_version)) 0L else app_state$data_version) + 1L
+
   active_ids <- app_state$active_file_ids
   
   active_ids <- active_ids[

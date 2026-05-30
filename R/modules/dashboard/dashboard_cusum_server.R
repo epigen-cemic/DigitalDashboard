@@ -92,7 +92,7 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
   })
   
   
-  observeEvent(input$run_cusum, {
+  run_dashboard_cusum <- function(show_message = TRUE) {
     tryCatch({
       req(
         prepared_cusum_data(),
@@ -166,10 +166,12 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
         selected = units[1]
       )
       
-      showNotification(
-        "CUSUM analysis completed.",
-        type = "message"
-      )
+      if (isTRUE(show_message)) {
+        showNotification(
+          "CUSUM analysis completed.",
+          type = "message"
+        )
+      }
     }, error = function(e) {
       showNotification(
         paste("CUSUM error:", e$message),
@@ -177,5 +179,27 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
         duration = 12
       )
     })
+  }
+
+  observeEvent(input$run_analysis, {
+    run_dashboard_cusum(show_message = TRUE)
   })
+
+  observeEvent(
+    list(
+      input$param_mu,
+      input$param_arl0,
+      input$param_rr,
+      input$param_h,
+      input$mu_method,
+      input$detection_period
+    ),
+    {
+      if (!isTRUE(input$reactive_display) || is.null(app_state$cusum_results)) {
+        return()
+      }
+      run_dashboard_cusum(show_message = FALSE)
+    },
+    ignoreInit = TRUE
+  )
 }

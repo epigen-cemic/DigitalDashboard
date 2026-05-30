@@ -90,59 +90,9 @@ dashboard_sidebar_ui <- function(ns) {
     uiOutput(ns("recommended_h_ui")),
     
     actionButton(
-      ns("run_cusum"),
-      "Run CUSUM",
+      ns("run_analysis"),
+      "Run Analysis",
       class = "btn-default dashboard-run-btn"
-    ),
-    
-    tags$hr(),
-    
-    tags$label(class = "control-label", "Geospatial Settings"),
-    
-    selectInput(
-      ns("time_mode"),
-      "Map Time Window",
-      choices = c(
-        "Selected single week" = "single",
-        "Selected week range" = "range"
-      ),
-      selected = "single",
-      width = "100%"
-    ),
-    
-    actionButton(
-      ns("run_geo"),
-      "Run Spatial Analysis",
-      class = "btn-default dashboard-run-btn"
-    ),
-    
-    tags$hr(),
-    
-    tags$label(class = "control-label", "Customize Dashboard"),
-    
-    checkboxGroupInput(
-      ns("visible_outputs"),
-      NULL,
-      choices = c(
-        "CUSUM overview" = "cusum_overview",
-        "CUSUM series plot" = "cusum_series",
-        "CUSUM process plot" = "cusum_process",
-        "Prevalence map" = "prevalence_map",
-        "LISA cluster map" = "lisa_map",
-        "Results tables" = "tables"
-      ),
-      selected = c("cusum_overview", "prevalence_map", "tables")
-    ),
-    
-    selectInput(
-      ns("layout_columns"),
-      "Layout",
-      choices = c(
-        "Two columns" = 2,
-        "One column" = 1
-      ),
-      selected = 2,
-      width = "100%"
     )
   )
 }

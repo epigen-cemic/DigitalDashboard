@@ -7,11 +7,11 @@ homeUI <- function() {
     div(
       class = "dashboard-home",
       
-      h2("RAP Unified Dashboard"),
+      h2("Digital Dashboard"),
       
       p(
-        "This dashboard combines the CUSUM RAP and Geospatial RAP tools into a ",
-        "single interface for upload, filtering, analysis, visualization, and export."
+        "The Digital Dashboard combines the CUSUM RAP and Geospatial RAP tools into a ",
+        "single interface for upload, filtering, analysis, visualization, display customization, and export."
       ),
       
       fluidRow(
@@ -43,14 +43,39 @@ homeUI <- function() {
       br(),
       
       div(
+        class = "info-card display-home-card",
+        h3("Display"),
+        p(
+          "The Display tab is the main control area for how dashboard results are presented. ",
+          "Use it to choose which CUSUM plots and Geospatial maps are visible, select a one- ",
+          "or two-column output layout, and decide whether result tables should appear inside ",
+          "the Output tab or in their own Output Table tab inside the Dashboard."
+        ),
+        p(
+          "The Display tab also includes readability and behavior settings. Users can increase the interface ",
+          "font size, choose how many decimal places are shown in on-screen result tables, and optionally ",
+          "allow outputs to refresh automatically when analysis parameters change. These display settings do not change the downloaded CSV values."
+        ),
+        p(
+          "Download buttons appear on each output card only after the corresponding results are available. ",
+          "CUSUM plots can be exported as PNG files, result tables can be exported as CSV files, ",
+          "and Geospatial map PNG export is available when the optional screenshot packages are installed."
+        )
+      ),
+      
+      br(),
+      
+      div(
         class = "info-card",
         h3("Recommended workflow"),
         tags$ol(
-          tags$li("Upload a prepared API-POP output file."),
+          tags$li("Upload one or more prepared API-POP output files."),
           tags$li("Review and adjust the global filters."),
-          tags$li("Configure CUSUM and geospatial settings."),
-          tags$li("Select which plots, maps, and tables to show in the dashboard."),
-          tags$li("Export the desired outputs.")
+          tags$li("Configure CUSUM settings and choose the geospatial map time window next to the week selector."),
+          tags$li("Open the Display tab to select visible outputs, layout, table placement, font size, table decimal display, and optional reactive display behavior."),
+          tags$li("Click Run Analysis to refresh both CUSUM and Geospatial outputs."),
+          tags$li("Review the dashboard Output, Prepared Data, and optional Output Table tabs."),
+          tags$li("Export the desired plots, maps, and tables once results are available.")
         )
       )
     )
@@ -66,7 +91,7 @@ helpUI <- function() {
       h2("Help"),
       
       p(
-        "This unified dashboard combines the CUSUM RAP and Geospatial RAP tools ",
+        "The Digital Dashboard combines the CUSUM RAP and Geospatial RAP tools ",
         "into a shared interface for data upload, filtering, analysis, visualization, ",
         "and export."
       ),
@@ -78,8 +103,8 @@ helpUI <- function() {
           tags$li("Upload one or more API-POP-compatible files."),
           tags$li("Use the global filters to select geographic level, locations, year, and week."),
           tags$li("Configure the CUSUM and geospatial settings as needed."),
-          tags$li("Run the analyses."),
-          tags$li("Customize which outputs are displayed in the dashboard.")
+          tags$li("Click Run Analysis."),
+          tags$li("Use the Display tab to customize which outputs are shown, whether tables appear in the main output or in a separate dashboard tab, and whether parameter changes should update outputs automatically after the first run.")
         )
       ),
       
@@ -172,7 +197,7 @@ helpUI <- function() {
   )
 }
 
-rap_header <- function(title = "Unified RAP Dashboard") {
+rap_header <- function(title = "Digital Dashboard") {
   tagList(
     div(class = "nav-bar", div(class = "nav-content", div(class = "header-logo-left"))),
     div(class = "hero-section", div(class = "hero-content", h1(class = "app-title", title)))
@@ -186,8 +211,7 @@ app_navbar <- function() {
       class = "custom-navbar unified-navbar",
       actionLink("nav_home", "Home"),
       actionLink("nav_dashboard", "Dashboard"),
-      actionLink("nav_cusum", "Legacy CUSUM"),
-      actionLink("nav_geo", "Legacy Geospatial"),
+      actionLink("nav_display", "Display"),
       actionLink("nav_help", "Help")
     )
   )

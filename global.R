@@ -30,38 +30,34 @@ library(leaflet)
 # Utilities
 library(here)
 
-# Shared dashboard helpers
-source("R/shared/app_state.R")
-source("R/shared/data_import.R")
-source("R/shared/ui_components.R")
-source("R/shared/file_manager.R")
+# ---------------------------------------------------------
+# Load all R files for the Digital Dashboard
+# ---------------------------------------------------------
 
-# Original analytical engines preserved by domain
-source("R/cusum/functions_parameters.R")
-source("R/cusum/functions_cusum.R")
-source("R/cusum/functions_plot.R")
-source("R/cusum/functions_io.R")
+source_r_folder <- function(path, recursive = FALSE, exclude = character()) {
+  files <- list.files(
+    path,
+    pattern = "\\.R$",
+    full.names = TRUE,
+    recursive = recursive
+  )
+  
+  files <- files[!basename(files) %in% exclude]
+  
+  invisible(lapply(sort(files), source))
+}
 
-source("R/geospatial/functions_io.R")
-source("R/geospatial/functions_spatial.R")
-source("R/geospatial/functions_plot.R")
-
-# Legacy modules
-source("R/cusum/mod_cusum.R")
-source("R/geospatial/mod_geospatial.R")
-
+# Shared helpers
+source_r_folder("R/shared", recursive = TRUE)
+# Analytical engines
+source_r_folder("R/cusum", recursive = TRUE)
+source_r_folder("R/geospatial", recursive = TRUE)
 # Dashboard module pieces
-source("R/modules/dashboard/dashboard_sidebar_ui.R")
-source("R/modules/dashboard/dashboard_main_ui.R")
-source("R/modules/dashboard/dashboard_file_server.R")
-source("R/modules/dashboard/dashboard_filter_server.R")
-source("R/modules/dashboard/dashboard_cusum_server.R")
-source("R/modules/dashboard/dashboard_geo_server.R")
-source("R/modules/dashboard/dashboard_output_server.R")
-
-# Dashboard module coordinator
+source_r_folder("R/modules/dashboard",recursive = TRUE)
+# Dashboard module coordinators
 source("R/modules/mod_unified_dashboard.R")
 source("R/modules/mod_app.R")
+
 
 sf::sf_use_s2(FALSE)
 

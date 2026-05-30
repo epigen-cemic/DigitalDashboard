@@ -14,7 +14,7 @@ appUI <- function() {
       )
     ),
     
-    rap_header("Unified RAP Dashboard"),
+    rap_header("Digital Dashboard"),
     
     app_navbar(),
     
@@ -26,9 +26,8 @@ appUI <- function() {
       
       tabPanel("dashboard", unifiedDashboardUI("dashboard")),
       
-      tabPanel("legacy_cusum", legacy_cusum_page()),
+      tabPanel("display", dashboard_display_ui(NS("dashboard"))),
       
-      tabPanel( "legacy_geo", legacy_geospatial_page()),
       
       tabPanel("help", helpUI())
     )
@@ -47,13 +46,10 @@ appServer <- function(input, output, session) {
     updateTabsetPanel(session, "main_tabs", selected = "dashboard")
   })
   
-  observeEvent(input$nav_cusum, {
-    updateTabsetPanel(session, "main_tabs", selected = "legacy_cusum")
+  observeEvent(input$nav_display, {
+    updateTabsetPanel(session, "main_tabs", selected = "display")
   })
   
-  observeEvent(input$nav_geo, {
-    updateTabsetPanel(session, "main_tabs", selected = "legacy_geo")
-  })
   
   observeEvent(input$nav_help, {
     updateTabsetPanel(session, "main_tabs", selected = "help")
@@ -161,7 +157,4 @@ appServer <- function(input, output, session) {
   })
   
   unifiedDashboardServer("dashboard", app_state)
-  
-  cusumServer("cusum_analysis")
-  geospatialServer("geospatial_analysis")
 }

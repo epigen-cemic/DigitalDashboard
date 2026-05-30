@@ -1,4 +1,4 @@
-# Shared data import, validation and small formatting helpers for the unified RAP dashboard.
+# Shared data import, validation and small formatting helpers for the Digital Dashboard.
 
 read_api_pop_csv <- function(path) {
   first_line <- readLines(path, n = 1, warn = FALSE)

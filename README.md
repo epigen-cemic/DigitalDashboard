@@ -1,6 +1,6 @@
-# Unified RAP Dashboard
+# Digital Dashboard
 
-This project combines the **CUSUM RAP** and **Geospatial RAP** tools into one Shiny dashboard. The analytical engines are still kept by domain, but the user workflow is now shared through a unified dashboard layer.
+This project combines the **CUSUM RAP** and **Geospatial RAP** tools into one Shiny dashboard. The analytical engines are still kept by domain, but the user workflow is now shared through a Digital Dashboard layer.
 
 The dashboard provides:
 
@@ -65,7 +65,7 @@ RAP-Dashboard/
   app.R
   global.R
   config.json
-  Unified-RAP-Dashboard.Rproj
+  Digital-Dashboard.Rproj
 
   R/
     shared/
@@ -288,7 +288,7 @@ refresh_active_dashboard_data(app_state)
 
 ## Global filters
 
-The unified dashboard is designed around shared global filters.
+The Digital Dashboard is designed around shared global filters.
 
 Current global filters include:
 
@@ -509,7 +509,7 @@ R/cusum/mod_cusum.R
 R/geospatial/mod_geospatial.R
 ```
 
-They should remain separate from the new dashboard workflow. The unified dashboard should be the primary workflow for new development.
+They should remain separate from the new dashboard workflow. The Digital Dashboard should be the primary workflow for new development.
 
 ---
 

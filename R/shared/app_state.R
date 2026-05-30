@@ -10,6 +10,7 @@ create_app_state <- function() {
     raw_data = NULL,
     file_names = NULL,
     last_error = NULL,
+    data_version = 0L,
     
     cusum_prepared = NULL,
     cusum_results = NULL,

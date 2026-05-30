@@ -198,7 +198,8 @@ plot_cusum_process_unit <- function(df_unit,
 plot_cusum_alarms_overview <- function(df,
                                        x_var     = "time_index",
                                        unit_var  = "analysis_unit_id",
-                                       alarm_var = "alarm") {
+                                       alarm_var = "alarm",
+                                       compact   = FALSE) {
   
   # Clean unit labels to show only the last segment (e.g. "Ambato")
   df <- df %>% dplyr::mutate(clean_label = sub(".*\\|", "", !!rlang::sym(unit_var)))
