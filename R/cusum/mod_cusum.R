@@ -282,7 +282,8 @@ cusumServer <- function(id) {
       } else {
         # Automatic method: needs a dataset to calculate baseline
         req(prepared_target_data())
-        mu_val <- get_phase1_baseline(prepared_target_data(), as.numeric(input$param_weeks))
+        unit_mu <- get_phase1_baseline_by_unit(prepared_target_data(), as.numeric(input$param_weeks))
+        mu_val <- mean(unit_mu, na.rm = TRUE)
       }
       k_val <- calculate_k_from_rr(input$param_rr, mu_val)
       return(k_val)
@@ -343,7 +344,7 @@ cusumServer <- function(id) {
         req(input$param_mu)
         final_mu <- input$param_mu
       } else {
-        final_mu <- get_phase1_baseline(prepared_df, window_size)
+        final_mu <- get_phase1_baseline_by_unit(prepared_df, window_size)
       }
       
       calculated_k <- calculate_k_from_rr(input$param_rr, final_mu)
@@ -359,12 +360,10 @@ cusumServer <- function(id) {
         reset           = TRUE
       )
       
-      if (length(calculated_k) == 1) {
-        res$k_value <- calculated_k
-      } else if (is.vector(calculated_k) && !is.null(names(calculated_k))) {
-        res$k_value <- calculated_k[res$analysis_unit_id]
-      } else {
+      if (length(calculated_k) == 1 || is.null(names(calculated_k))) {
         res$k_value <- calculated_k[1]
+      } else {
+        res$k_value <- as.numeric(calculated_k[as.character(res$analysis_unit_id)])
       }
       
       return(res)

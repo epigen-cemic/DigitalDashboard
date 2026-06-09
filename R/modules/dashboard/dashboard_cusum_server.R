@@ -38,10 +38,11 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
       input$param_mu
     } else {
       req(prepared_cusum_data())
-      get_phase1_baseline(
+      unit_mu <- get_phase1_baseline_by_unit(
         prepared_cusum_data(),
         as.numeric(input$detection_period)
       )
+      mean(unit_mu, na.rm = TRUE)
     }
     
     calculate_k_from_rr(input$param_rr, mu_val)
@@ -129,7 +130,7 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
       final_mu <- if (identical(input$mu_method, "manual")) {
         input$param_mu
       } else {
-        get_phase1_baseline(prepared_df, window_size)
+        get_phase1_baseline_by_unit(prepared_df, window_size)
       }
       
       calculated_k <- calculate_k_from_rr(
@@ -148,10 +149,10 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
         reset = TRUE
       )
       
-      res$k_value <- if (length(calculated_k) == 1) {
-        calculated_k
+      if (length(calculated_k) == 1 || is.null(names(calculated_k))) {
+        res$k_value <- calculated_k[1]
       } else {
-        calculated_k[1]
+        res$k_value <- as.numeric(calculated_k[as.character(res$analysis_unit_id)])
       }
       
       app_state$cusum_prepared <- prepared_df

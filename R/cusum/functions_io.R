@@ -225,10 +225,22 @@ process_target_data <- function(raw_df,
       dplyr::slice(dplyr::n()) %>%   
       dplyr::ungroup()
   } else {
-    # Default to "sum" if not old or new
-    df_dedup <- df_filtered %>%
-      dplyr::group_by(dplyr::across(dplyr::all_of(c(req_cols, "year", "week")))) %>%
-      dplyr::summarise(n_cases = sum(n_cases, na.rm = TRUE), .groups = "drop")
+    # Default to "sum" if not old or new. Preserve population so downstream
+    # plots and tables can display observed/expected rates per 100,000 people.
+    df_grouped <- df_filtered %>%
+      dplyr::group_by(dplyr::across(dplyr::all_of(c(req_cols, "year", "week"))))
+
+    if ("population" %in% names(df_filtered)) {
+      df_dedup <- df_grouped %>%
+        dplyr::summarise(
+          n_cases = sum(n_cases, na.rm = TRUE),
+          population = sum(population, na.rm = TRUE),
+          .groups = "drop"
+        )
+    } else {
+      df_dedup <- df_grouped %>%
+        dplyr::summarise(n_cases = sum(n_cases, na.rm = TRUE), .groups = "drop")
+    }
   }
   
   # --- 4. Gap Filling --- 

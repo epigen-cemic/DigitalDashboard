@@ -58,6 +58,93 @@ dashboard_output_server <- function(input, output, session, app_state) {
       legend.text = ggplot2::element_text(size = max(9, dashboard_font_base_size() - 1))
     )
   }
+  build_dashboard_table_filter_ui <- function(id_prefix, df) {
+    if (is.null(df) || nrow(df) == 0) {
+      return(NULL)
+    }
+    column_choices <- names(df)
+    selected_col <- column_choices[[1]]
+    div(
+      class = "table-filter-bar dashboard-table-filter-bar",
+      tags$label(
+        class = "table-filter-inline-label",
+        "Search by:"
+      ),
+      selectInput(
+        ns(paste0(id_prefix, "_filter_col")),
+        label = NULL,
+        choices = column_choices,
+        selected = selected_col,
+        width = "220px"
+      ),
+      uiOutput(ns(paste0(id_prefix, "_filter_value_ui")), inline = TRUE)
+    )
+  }
+  build_dashboard_table_filter_value_ui <- function(id_prefix, df, selected_col) {
+    if (is.null(df) || is.null(selected_col) || !selected_col %in% names(df)) {
+      return(NULL)
+    }
+    values <- df[[selected_col]]
+    if (is.numeric(values)) {
+      range_values <- range(values, na.rm = TRUE)
+      if (!all(is.finite(range_values))) {
+        return(NULL)
+      }
+      return(
+        div(
+          class = "table-filter-values",
+          numericInput(
+            ns(paste0(id_prefix, "_filter_min")),
+            label = NULL,
+            value = range_values[[1]],
+            min = range_values[[1]],
+            max = range_values[[2]],
+            width = "130px"
+          ),
+          tags$span(class = "table-filter-separator", "to"),
+          numericInput(
+            ns(paste0(id_prefix, "_filter_max")),
+            label = NULL,
+            value = range_values[[2]],
+            min = range_values[[1]],
+            max = range_values[[2]],
+            width = "130px"
+          )
+        )
+      )
+    }
+    textInput(
+      ns(paste0(id_prefix, "_filter_text")),
+      label = NULL,
+      value = "",
+      placeholder = paste("Search", selected_col),
+      width = "260px"
+    )
+  }
+  apply_dashboard_table_filter <- function(df, id_prefix) {
+    selected_col <- input[[paste0(id_prefix, "_filter_col")]]
+    if (is.null(df) || is.null(selected_col) || !selected_col %in% names(df)) {
+      return(df)
+    }
+    values <- df[[selected_col]]
+    if (is.numeric(values)) {
+      min_value <- suppressWarnings(as.numeric(input[[paste0(id_prefix, "_filter_min")]]))
+      max_value <- suppressWarnings(as.numeric(input[[paste0(id_prefix, "_filter_max")]]))
+      if (!is.null(min_value) && is.finite(min_value)) {
+        df <- df[is.na(df[[selected_col]]) | df[[selected_col]] >= min_value, , drop = FALSE]
+      }
+      if (!is.null(max_value) && is.finite(max_value)) {
+        df <- df[is.na(df[[selected_col]]) | df[[selected_col]] <= max_value, , drop = FALSE]
+      }
+      return(df)
+    }
+    text_value <- input[[paste0(id_prefix, "_filter_text")]]
+    if (is.null(text_value) || !nzchar(text_value)) {
+      return(df)
+    }
+    keep <- grepl(text_value, as.character(values), ignore.case = TRUE, fixed = TRUE)
+    df[keep, , drop = FALSE]
+  }
   dashboard_datatable <- function(df, page_length = 10) {
     numeric_cols <- names(df)[vapply(df, is.numeric, logical(1))]
     decimal_cols <- numeric_cols[vapply(numeric_cols, function(col) {
@@ -67,7 +154,23 @@ dashboard_output_server <- function(input, output, session, app_state) {
     }, logical(1))]
     table <- DT::datatable(
       df,
-      options = list(pageLength = page_length, scrollX = TRUE)
+      extensions = "Buttons",
+      options = list(
+        pageLength = page_length,
+        scrollX = TRUE,
+        searchHighlight = TRUE,
+        dom = "Blrtip",
+        buttons = list(
+          list(
+            extend = "colvis",
+            text = "Show / hide columns"
+          )
+        ),
+        columnDefs = list(
+          list(className = "dt-left", targets = "_all")
+        )
+      ),
+      rownames = FALSE
     )
     if (length(decimal_cols) > 0) {
       table <- DT::formatRound(table, columns = decimal_cols, digits = table_decimals())
@@ -106,13 +209,30 @@ dashboard_output_server <- function(input, output, session, app_state) {
     if (has_cusum_results()) {
       table_tabs <- append(
         table_tabs,
-        list(tabPanel("CUSUM Results", DT::DTOutput(ns("cusum_table"))))
+        list(
+          tabPanel(
+            "CUSUM Weekly Results",
+            uiOutput(ns("cusum_table_filter_ui")),
+            DT::DTOutput(ns("cusum_table"))
+          ),
+          tabPanel(
+            "CUSUM Reference",
+            uiOutput(ns("cusum_reference_table_filter_ui")),
+            DT::DTOutput(ns("cusum_reference_table"))
+          )
+        )
       )
     }
     if (has_geo_results()) {
       table_tabs <- append(
         table_tabs,
-        list(tabPanel("Geospatial Results", DT::DTOutput(ns("geo_table"))))
+        list(
+          tabPanel(
+            "Geospatial Results",
+            uiOutput(ns("geo_table_filter_ui")),
+            DT::DTOutput(ns("geo_table"))
+          )
+        )
       )
     }
     output_card(
@@ -377,14 +497,51 @@ dashboard_output_server <- function(input, output, session, app_state) {
       active_country
     )
   })
+  output$cusum_table_filter_ui <- renderUI({
+    req(app_state$cusum_results)
+    build_dashboard_table_filter_ui("cusum_table", format_cusum_weekly_table(app_state$cusum_results))
+  })
+  output$cusum_table_filter_value_ui <- renderUI({
+    req(app_state$cusum_results)
+    df <- format_cusum_weekly_table(app_state$cusum_results)
+    build_dashboard_table_filter_value_ui("cusum_table", df, input$cusum_table_filter_col)
+  })
+  output$cusum_reference_table_filter_ui <- renderUI({
+    req(app_state$cusum_results)
+    build_dashboard_table_filter_ui("cusum_reference_table", format_cusum_reference_table(app_state$cusum_results))
+  })
+  output$cusum_reference_table_filter_value_ui <- renderUI({
+    req(app_state$cusum_results)
+    df <- format_cusum_reference_table(app_state$cusum_results)
+    build_dashboard_table_filter_value_ui("cusum_reference_table", df, input$cusum_reference_table_filter_col)
+  })
+  output$geo_table_filter_ui <- renderUI({
+    req(app_state$geo_results)
+    build_dashboard_table_filter_ui("geo_table", sf::st_drop_geometry(app_state$geo_results))
+  })
+  output$geo_table_filter_value_ui <- renderUI({
+    req(app_state$geo_results)
+    df <- sf::st_drop_geometry(app_state$geo_results)
+    build_dashboard_table_filter_value_ui("geo_table", df, input$geo_table_filter_col)
+  })
   output$cusum_table <- DT::renderDT({
     req(app_state$cusum_results)
-    dashboard_datatable(app_state$cusum_results)
-  })
+    df <- format_cusum_weekly_table(app_state$cusum_results)
+    df <- apply_dashboard_table_filter(df, "cusum_table")
+    dashboard_datatable(df, page_length = 25)
+  }, server = FALSE)
+  output$cusum_reference_table <- DT::renderDT({
+    req(app_state$cusum_results)
+    df <- format_cusum_reference_table(app_state$cusum_results)
+    df <- apply_dashboard_table_filter(df, "cusum_reference_table")
+    dashboard_datatable(df, page_length = 25)
+  }, server = FALSE)
   output$geo_table <- DT::renderDT({
     req(app_state$geo_results)
-    dashboard_datatable(sf::st_drop_geometry(app_state$geo_results))
-  })
+    df <- sf::st_drop_geometry(app_state$geo_results)
+    df <- apply_dashboard_table_filter(df, "geo_table")
+    dashboard_datatable(df)
+  }, server = FALSE)
   output$global_moran_banner <- renderUI({
     req(app_state$geo_results)
     gm <- compute_global_moran(
@@ -433,6 +590,7 @@ dashboard_output_server <- function(input, output, session, app_state) {
           class = "dashboard-card-actions",
           downloadButton(ns("download_cusum_prepared_csv"), "Download Prepared CUSUM CSV", class = "dashboard-download-button")
         ),
+        uiOutput(ns("cusum_prepared_table_filter_ui")),
         DT::DTOutput(ns("cusum_prepared_table"))
       )
     } else if (!is.null(app_state$raw_data)) {
@@ -442,6 +600,7 @@ dashboard_output_server <- function(input, output, session, app_state) {
           class = "dashboard-card-actions",
           downloadButton(ns("download_active_standardized_csv"), "Download Active Standardized CSV", class = "dashboard-download-button")
         ),
+        uiOutput(ns("active_standardized_table_filter_ui")),
         DT::DTOutput(ns("active_standardized_table"))
       )
     } else {
@@ -780,13 +939,31 @@ dashboard_output_server <- function(input, output, session, app_state) {
       save_leaflet_png(map, file)
     }
   )
+  output$cusum_prepared_table_filter_ui <- renderUI({
+    req(app_state$cusum_prepared)
+    build_dashboard_table_filter_ui("cusum_prepared_table", app_state$cusum_prepared)
+  })
+  output$cusum_prepared_table_filter_value_ui <- renderUI({
+    req(app_state$cusum_prepared)
+    build_dashboard_table_filter_value_ui("cusum_prepared_table", app_state$cusum_prepared, input$cusum_prepared_table_filter_col)
+  })
+  output$active_standardized_table_filter_ui <- renderUI({
+    req(app_state$raw_data)
+    build_dashboard_table_filter_ui("active_standardized_table", app_state$raw_data)
+  })
+  output$active_standardized_table_filter_value_ui <- renderUI({
+    req(app_state$raw_data)
+    build_dashboard_table_filter_value_ui("active_standardized_table", app_state$raw_data, input$active_standardized_table_filter_col)
+  })
   output$cusum_prepared_table <- DT::renderDT({
     req(app_state$cusum_prepared)
-    dashboard_datatable(app_state$cusum_prepared)
+    df <- apply_dashboard_table_filter(app_state$cusum_prepared, "cusum_prepared_table")
+    dashboard_datatable(df)
   })
   output$active_standardized_table <- DT::renderDT({
     req(app_state$raw_data)
-    dashboard_datatable(app_state$raw_data)
+    df <- apply_dashboard_table_filter(app_state$raw_data, "active_standardized_table")
+    dashboard_datatable(df)
   })
   output$download_cusum_prepared_csv <- downloadHandler(
     filename = function() {
