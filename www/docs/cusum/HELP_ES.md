@@ -1,58 +1,76 @@
-# Herramienta RAP CUSUM: Guía de Desarrollo y Administración
+# Ayuda CUSUM
 
-Esta guía está dirigida a desarrolladores, administradores de IT y mantenedores de la Herramienta RAP CUSUM. Si eres un usuario final que busca instrucciones sobre cómo utilizar la interfaz, puedes consultar el **Manual de Usuario** ubicado en `www/docs/Documentation.pdf` o haciendo clic en el botón "Help" dentro de la aplicación.
+**Digital Dashboard**  
+Uso e interpretación de las salidas CUSUM en el Digital Dashboard  
+Revisión de documentación: junio de 2026  
+Idioma: Español
 
-## 1. Estructura del Proyecto
-El repositorio está estructurado como una aplicación Shiny estándar con componentes modularizados.
+---
 
-* **Directorio Raíz (`/`)** Contiene los scripts principales de la aplicación (`app.R`, `global.R`), archivos del proyecto (`CUSUM-RAP.Rproj`) y configuraciones de nivel superior (`config.json`).
-* **Directorio `R/`**: Contiene la lógica central y los módulos Shiny. Esto incluye `mod_cusum.R` (el módulo principal de UI y Servidor) y los scripts del backend (`functions_cusum.R`, `functions_io.R`, `functions_parameters.R`, `functions_plot.R`).
-* **Directorio `www/`**: Contiene los recursos web estáticos expuestos al navegador. Esto incluye `config.css` (estilos de UI), la carpeta `docs/` (documentación para el usuario final) y recursos gráficos (`AnalysisforAction_white.png`, `splash.png`, `default.ico`).
+# 1. Alcance en el Dashboard
 
-```text
-/ (Directorio Raíz)
-├── app.R                        # Script principal de la aplicación
-├── global.R                     # Script de configuración y variables globales
-├── CUSUM-RAP.Rproj              # Archivo del proyecto de RStudio
-├── config.json                  # Configuraciones (ej. jerarquías espaciales)
-│
-├── R/                           # Lógica central y módulos Shiny
-│   ├── mod_cusum.R              # Módulo principal (UI y Servidor)
-│   ├── functions_cusum.R        # Funciones matemáticas del algoritmo
-│   ├── functions_io.R           # Funciones de lectura y guardado
-│   ├── functions_parameters.R   # Funciones para el cálculo de variables
-│   └── functions_plot.R         # Funciones para generar los gráficos
-│
-└── www/                         # Recursos web estáticos
-    ├── config.css               # Hoja de estilos (colores y diseño)
-    ├── AnalysisforAction_white.png # Recurso gráfico
-    ├── splash.png               # Recurso gráfico
-    ├── default.ico              # Ícono de la pestaña
-    │
-    └── docs/                    # Documentación para el usuario final
-        └── Documentation.pdf    # El manual que se abre al tocar "Help"
-```
+El componente CUSUM vigila recuentos semanales para detectar aumentos sostenidos sobre un valor esperado. Usa los archivos activos, nivel geográfico, ubicaciones CUSUM, período de detección y parámetros seleccionados.
 
-## 2. Ejecutar la App Localmente (Desarrollo)
-Para ejecutar o probar la aplicación en un entorno de desarrollo R:
-1. Abrir el archivo `CUSUM-RAP.Rproj` en RStudio.
-2. Abrir `app.R`.
-3. Hacer clic en **Run App** en RStudio, o ejecutar `shiny::runApp()` en la consola.
+> **Comportamiento de Locations.** El selector Locations limita las unidades CUSUM. Actualmente no filtra los mapas Geospatial.
 
-## 3. Despliegue en la Web
-Para que la herramienta sea accesible a través de un navegador web, se debe alojar la aplicación en un servidor.
+Los controles de año y semana del mapa corresponden a Geospatial. CUSUM usa la historia semanal reciente requerida por el período de detección y las reglas de cobertura.
 
-**Opción A: shinyapps.io (Hosting en la nube más sencillo)**
-1. Puedes crear una cuenta gratuita o paga en [shinyapps.io](https://www.shinyapps.io/).
-2. Instalar el paquete de despliegue en R ejecutando `install.packages("rsconnect")`.
-3. Autenticar tu sesión de RStudio usando el token seguro provisto en tu panel de shinyapps.io.
-4. Desplegar la app haciendo clic en el botón azul **Publish** en la esquina superior derecha de tu editor de RStudio, o ejecutando `rsconnect::deployApp()` en la consola.
 
-**Opción B: Infraestructura Propia**
-Si tus datos epidemiológicos requieren un cumplimiento estricto de privacidad que impide el uso de hosting en la nube de terceros, puedes alojar la aplicación en tu propia infraestructura (AWS, DigitalOcean o un servidor interno seguro). Esto requiere instalar **Shiny Server** (open-source) en una máquina Linux o empaquetar la aplicación utilizando contenedores **Docker**.
+# 2. Configurar CUSUM
 
-## 4. Configuración y Personalización de la App
-Los administradores pueden personalizar la apariencia y el mapeo geográfico sin alterar la lógica central de R.
+| Control | Significado |
+| --- | --- |
+| Geographic Level | Nivel administrativo usado para crear unidades CUSUM independientes. |
+| Locations | Unidades incluidas; vacío incluye todas las disponibles del nivel. |
+| Detection Period | Número reciente de semanas de vigilancia. |
+| Expected Frequency | Estimación automática por unidad o recuento semanal esperado manual. |
+| Target ARL0 | Longitud media en control utilizada para recomendar h. |
+| Relative Risk | Aumento que se desea detectar; se usa para calcular k. |
+| Calculated k | Valor de referencia calculado con el esperado y el riesgo relativo. |
+| h Threshold | Umbral de alarma; valores mayores suelen producir menos alarmas. |
 
-* **Modificación del Diseño (`www/config.css`)**: El estilo de la aplicación está codificado en este archivo CSS. Busca y reemplaza los códigos hexadecimales específicos para cambiar el aspecto visual (ej., `#4a4a4a` para fondos gris oscuro, `#616161` para texto estándar).
-* **Agregar Países y Regiones (`config.json`)**: La jerarquía espacial se define aquí. Añade un nuevo arreglo definiendo los niveles administrativos de mayor a menor (ej., `"Brazil": { "levels": ["country", "state", "municipality"] }`).
+1. Cargue y active los archivos.
+2. Elija nivel y Locations opcionales.
+3. Configure CUSUM.
+4. Seleccione Run Analysis.
+5. Use Display para elegir gráficos, tablas, fuente, decimales y cambios reactivos de presentación.
+
+> **Run Analysis.** Cambios de archivos, nivel o Locations requieren ejecutar nuevamente. Display puede reorganizar resultados ya calculados.
+
+
+# 3. Salidas y descargas
+
+- Resumen de alarmas: mapa de calor por unidad y semana.
+- Serie observado/esperado: compara recuentos y línea base.
+- Proceso CUSUM: muestra acumulación y umbral h.
+- Resultados semanales: valores, estadístico, alarma y parámetros.
+- Referencia por unidad: esperados e información de referencia.
+- Prepared CUSUM data: conjunto limpio, agregado, sin solapamientos y con brechas completadas.
+
+Los botones de descarga aparecen cuando existe el resultado. Los CSV conservan precisión completa aunque la tabla muestre menos decimales.
+
+
+# 4. Interpretación responsable
+
+Una alarma indica que la desviación positiva acumulada alcanzó h. Es una señal temprana, no prueba de brote ni conclusión causal.
+
+- Confirme completitud y que los ceros agregados representen semanas realmente sin casos.
+- Revise archivos activos y manejo de duplicados.
+- Revise cambios de definición, acceso a laboratorio, intensidad de vigilancia o demoras.
+- Compare unidades vecinas y mapas cuando corresponda.
+- Documente archivos, filtros, método esperado, RR, k y h al escalar.
+
+> **Interpretación.** Una semana alta aislada puede no alarmar; elevaciones moderadas repetidas pueden acumularse.
+
+
+# 5. Solución de problemas
+
+| Problema | Qué revisar |
+| --- | --- |
+| Sin salida CUSUM | Archivos activos, Run Analysis y salidas CUSUM habilitadas en Display. |
+| Locations parece ignorado | Locations afecta CUSUM, no los mapas. |
+| Advertencia de cobertura | Revise Prepared Data y semanas observadas antes del relleno con ceros. |
+| Línea base manual incorrecta | Ingrese casos esperados por unidad y semana, no prevalencia por 100.000. |
+| Display cambió pero no los datos | Display cambia presentación; filtros estructurales requieren Run Analysis. |
+| CSV difiere de decimales visibles | La tabla está formateada; la descarga conserva precisión. |
+

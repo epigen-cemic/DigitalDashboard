@@ -1,115 +1,77 @@
-# Geospatial RAP Tool: Developer & Administrator Guide
+# Geospatial Help
 
-This guide is intended for developers, IT administrators, and maintainers of the Geospatial RAP Tool. End-users should refer to the User Manual available within the application.
-
----
-
-## 1. Project Structure
-
-The repository follows a modular Shiny architecture.
-
-* Root directory: main scripts (`app.R`, `global.R`, `config.json`)
-* `R/`: core logic and modules
-* `data/`: optimized spatial layers (`.rds`)
-* `build_data/`: preprocessing scripts
-* `www/`: UI assets and documentation
+**Digital Dashboard**  
+Using and interpreting maps in the Digital Dashboard  
+Documentation revision: June 2026  
+Language: English
 
 ---
 
-## 2. Running the App Locally
+# 1. Scope in the Dashboard
 
-1. Open the project in RStudio
-2. Open `app.R`
-3. Run:
+The Geospatial component aggregates cases and population for the selected geographic level and time window, joins those results to the configured GeoPackage layer, and produces prevalence and spatial-cluster outputs.
 
-shiny::runApp()
+> **All units are mapped.** The current Dashboard maps every available unit at the selected level and time window. The Locations selector currently affects CUSUM only.
 
----
+Population is required because prevalence is calculated as cases divided by population and multiplied by the configured rate multiplier, currently 100,000.
 
-## 3. Deployment
 
-### Option A: shinyapps.io
+# 2. Configure the maps
 
-* Install `rsconnect`
-* Deploy using `rsconnect::deployApp()`
+| Control | Meaning |
+| --- | --- |
+| Geographic Level | Administrative level and spatial layer used for maps. |
+| Year | Epidemiological year included in the mapped output. |
+| Single Week | Uses one epidemiological week. |
+| Week Range | Aggregates cases across an inclusive week interval; the range must contain at least two weeks when possible. |
+| Population | Required denominator; repeated weekly population values are deduplicated before aggregation. |
+| Run Analysis | Rebuilds the mapped data and spatial statistics. |
 
-### Option B: Self-hosted
+1. Activate the required data files.
+2. Choose Geographic Level.
+3. Select year and Single Week or Week Range.
+4. Select Run Analysis.
+5. Use Display to show the prevalence map, LISA map, table, layout, font size, and decimals.
 
-* Shiny Server (Linux)
-* Docker containerization
+> **Identifier matching.** CSV geographic codes must match the configured spatial identifiers after normalization and zero padding. Unmatched codes cannot be mapped.
 
-### Option C: Desktop (Electron)
 
-* Bundles R + app into standalone executable
-* No user setup required
+# 3. Read the outputs
 
----
+The prevalence map shows cases per 100,000 for every matched unit. Its legend remains visible and map popups provide unit name, identifier, cases, population, prevalence, LISA category, and p-value when available.
 
-## 4. Configuration
+Global Moran's I summarizes overall spatial autocorrelation. A statistically meaningful positive value suggests similar values cluster; a negative value suggests neighbouring dissimilarity. It does not identify which units form local clusters.
 
-### 4.1 Geographic Configuration (`config.json`)
+| LISA category | Meaning |
+| --- | --- |
+| High-High | High-value unit surrounded by high-value neighbours; potential hot spot. |
+| Low-Low | Low-value unit surrounded by low-value neighbours; potential cold spot. |
+| High-Low | High-value unit among low-value neighbours; spatial outlier. |
+| Low-High | Low-value unit among high-value neighbours; inverse outlier. |
+| Not Significant | No local association meeting the current significance rule. |
 
-Defines:
+The results table contains identifiers, names, cases, population, weeks, prevalence, LISA category, and p-value. Prepared Data records the aggregation, identifier normalization, join, and spatial calculation steps.
 
-* Administrative levels
-* Mapping between CSV and spatial layers
-* Spatial IDs and labels
 
-Supports multi-country setups without modifying core code.
+# 4. Interpret responsibly
 
----
+- Moran and LISA describe spatial association, not causation.
+- LISA classifications depend on neighbour definitions, available units, data quality, and the selected time window.
+- Small populations can create unstable prevalence values.
+- A cluster can reflect reporting intensity, access, mobility, population structure, or local practice rather than transmission alone.
+- Compare maps with CUSUM trends, denominators, local intelligence, and surveillance context.
 
-### 4.2 UI Customization (`config.css`)
+> **Range maps.** In week-range mode, cases are summed across the selected weeks while repeated population records are deduplicated before the denominator is aggregated.
 
-Controls:
 
-* Layout and colors
-* Sidebar appearance
-* Map background
+# 5. Troubleshooting
 
----
+| Problem | Check |
+| --- | --- |
+| Map is blank or missing units | Check active data, population, GeoPackage availability, layer configuration, and identifier matching. |
+| Locations does not filter maps | This is current Dashboard behavior; maps use all units at the selected level. |
+| No Moran banner or LISA | There may be too few matched units, no variance, missing neighbours, or a failed spatial test. |
+| Unexpected prevalence | Review population deduplication, selected time window, and rate multiplier. |
+| No map download | Screenshot packages may be unavailable; CSV data downloads can still work. |
+| Display changed but map data did not | Structural filter changes require Run Analysis. |
 
-### 4.3 Offline Spatial Data
-
-Optimized `.rds` layers are stored in:
-
-data/
-
-To generate them:
-
-build_data/optimize_spatial_data.R
-
----
-
-## 5. Data Pipeline
-
-The application:
-
-* Reads API-POP CSV files
-* Standardizes column names
-* Pads geographic identifiers
-* Aggregates data
-* Performs spatial joins
-
----
-
-## 6. Spatial Analysis Engine
-
-* Global Moran’s I
-* Local Moran’s I (LISA)
-* Handles sparse data using safe defaults
-
----
-
-## 7. Troubleshooting
-
-* Missing polygons → check spatial IDs
-* Empty maps → verify configuration
-* Performance issues → ensure `.rds` usage
-
----
-
-## 8. Documentation
-
-* User Manual: `www/docs/Documentation.pdf`
-* Spanish version: `HELP_ES.md`

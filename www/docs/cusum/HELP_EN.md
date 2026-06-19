@@ -1,58 +1,76 @@
-# CUSUM RAP Tool: Developer & Administrator Guide
+# CUSUM Help
 
-This guide is intended for developers, IT administrators, and maintainers of the CUSUM RAP Tool. If you are an end-user looking for instructions on how to use the analytical interface, please refer to the **User Manual** located at `www/docs/Documentation.pdf` or click the "Help" button inside the running application.
+**Digital Dashboard**  
+Using and interpreting CUSUM outputs in the Digital Dashboard  
+Documentation revision: June 2026  
+Language: English
 
-## 1. Project Structure
-The repository is structured as a standard Shiny application with modularized components.
+---
 
-* **Root Directory (`/`)**: Contains the main application scripts (`app.R`, `global.R`), project files (`CUSUM-RAP.Rproj`), and top-level configurations (`config.json`).
-* **`R/` Directory**: Contains the core logic and Shiny modules. This includes `mod_cusum.R` (the main UI and Server module) and the backend scripts (`functions_cusum.R`, `functions_io.R`, `functions_parameters.R`, `functions_plot.R`).
-* **`www/` Directory**: Contains static web assets exposed to the browser. This includes `config.css` (UI styling), the `docs/` folder (end-user documentation), and graphical assets (`AnalysisforAction_white.png`, `splash.png`, `default.ico`).
+# 1. Scope in the Dashboard
 
-```text
-/ (Root Directory)
-├── app.R                        # Main application script
-├── global.R                     # Configuration and global variables script
-├── CUSUM-RAP.Rproj              # RStudio project file
-├── config.json                  # Top-level configurations (e.g., spatial hierarchies)
-│
-├── R/                           # Core logic and Shiny modules
-│   ├── mod_cusum.R              # Main module (UI and Server)
-│   ├── functions_cusum.R        # Mathematical algorithm functions
-│   ├── functions_io.R           # Data reading and saving functions
-│   ├── functions_parameters.R   # Variable calculation functions
-│   └── functions_plot.R         # Chart and plot generation functions
-│
-└── www/                         # Static web assets (exposed to the browser)
-    ├── config.css               # Stylesheet (UI colors and layout)
-    ├── AnalysisforAction_white.png # Graphic asset
-    ├── splash.png               # Graphic asset
-    ├── default.ico              # Browser tab icon
-    │
-    └── docs/                    # End-user documentation
-        └── Documentation.pdf    # The manual that opens when clicking "Help"
-```
+The CUSUM component monitors weekly case counts for sustained increases above an expected baseline. It runs inside the shared Digital Dashboard workflow and uses the active uploaded files, selected geographic level, selected CUSUM locations, detection period, and CUSUM parameters.
 
-## 2. Running the App Locally (Development)
-To run or test the application within an R development environment:
-1. Open the `CUSUM-RAP.Rproj` file in RStudio.
-2. Open `app.R`.
-3. Click **Run App** in the RStudio IDE, or run `shiny::runApp()` in the console.
+> **Location behavior.** The Locations selector limits CUSUM units. It does not currently filter the Geospatial maps.
 
-## 3. Web Deployment 
-To make the tool accessible via a web browser, you must host the application on a server. 
+The map year and week controls are for Geospatial analysis. CUSUM instead uses the most recent weekly history required by the detection period and coverage rules.
 
-**Option A: shinyapps.io (Easiest Cloud Hosting)**
-1. Create a free or paid account at [shinyapps.io](https://www.shinyapps.io/).
-2. Install the deployment package in R by running `install.packages("rsconnect")`.
-3. Authenticate your RStudio session using the secure token provided in your shinyapps.io dashboard.
-4. Deploy the app by clicking the blue **Publish** button in the top right corner of your RStudio script editor, or by running `rsconnect::deployApp()` in the console.
 
-**Option B: Self-Hosted Infrastructure**
-If your epidemiological data requires strict privacy compliance that prevents the use of third-party cloud hosting, you can host the application on your own infrastructure (AWS, DigitalOcean, or an internal secure server). This requires installing the open-source **Shiny Server** on a Linux machine or containerizing the application using **Docker**.
+# 2. Configure CUSUM
 
-## 4. App Configuration & Customization
-Administrators can customize the application's appearance and geographical mapping without altering the core R logic.
+| Control | Meaning |
+| --- | --- |
+| Geographic Level | Administrative level used to create independent CUSUM units. |
+| Locations | Selected units to include; an empty selection includes all available units at the chosen level. |
+| Detection Period | Recent number of weeks used for CUSUM monitoring. |
+| Expected Frequency | Automatic unit-specific estimate or manual expected weekly count. |
+| Target ARL0 | Desired in-control average run length, used to recommend h. |
+| Relative Risk | Increase the procedure is designed to detect; used to calculate k. |
+| Calculated k | CUSUM reference value calculated from the expected count and relative risk. |
+| h Threshold | Alarm threshold; higher values usually reduce alarm frequency. |
 
-* **Modifying the UI Design (`www/config.css`)**: The application's styling is hardcoded into this CSS file. Find and replace specific hex codes to change branding (e.g., `#4a4a4a` for dark gray backgrounds, `#616161` for standard text).
-* **Adding Countries & Regions (`config.json`)**: The spatial hierarchy for the analytical output is defined here. Add a new array defining the administrative levels from highest to lowest (e.g., `"Brazil": { "levels": ["country", "state", "municipality"] }`).
+1. Upload and activate the required files.
+2. Choose the geographic level and optional Locations.
+3. Configure the CUSUM controls.
+4. Select Run Analysis.
+5. Use Display to choose visible CUSUM plots, table placement, font size, decimals, and reactive presentation changes.
+
+> **Run Analysis.** Changes to files, geographic level, or selected Locations require a new analysis run. Display can reorganize existing results after a successful run.
+
+
+# 3. Outputs and downloads
+
+- Alarm overview: heatmap of alarm status by unit and recent week.
+- Observed/expected series: compares weekly observed counts with the expected baseline.
+- CUSUM process: shows accumulation of evidence and the threshold h.
+- Weekly results: time-series values, statistic, alarm state, and parameters.
+- Unit reference: expected weekly values and reference information once per unit.
+- Prepared CUSUM data: cleaned, aggregated, overlap-resolved, and gap-completed dataset used by the analysis.
+
+Download buttons appear only after the associated result exists. CSV downloads retain underlying numeric precision even when the visible tables use fewer decimal places.
+
+
+# 4. Interpret responsibly
+
+An alarm indicates that accumulated positive deviation from the expected weekly count reached h. It is an early-warning signal, not proof of an outbreak or a causal conclusion.
+
+- Confirm reporting completeness and whether added zero weeks represent true zero cases.
+- Check duplicate-file handling and active files.
+- Review changes in case definition, laboratory access, surveillance intensity, or reporting delay.
+- Compare neighbouring units and the Geospatial outputs where appropriate.
+- Document the selected files, filters, expected-frequency method, RR, k, and h when escalating.
+
+> **Interpretation.** A single high week may or may not alarm. Repeated moderate elevations can accumulate and trigger an alarm.
+
+
+# 5. Troubleshooting
+
+| Problem | Check |
+| --- | --- |
+| No CUSUM output | Confirm active files, Run Analysis, and that CUSUM outputs are enabled in Display. |
+| Locations appear ignored | Locations affect CUSUM only; confirm the CUSUM plots/tables rather than the maps. |
+| Coverage warning or stop | Inspect Prepared Data and confirm sufficient observed weeks before zero filling. |
+| Manual baseline looks wrong | Enter expected cases per unit per week, not prevalence per 100,000. |
+| Display changed but data did not | Display changes presentation; structural filters require Run Analysis. |
+| CSV values differ from visible decimals | The table is formatted; the download retains full precision. |
+

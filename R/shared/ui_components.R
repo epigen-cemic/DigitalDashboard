@@ -126,14 +126,14 @@ helpUI <- function() {
         tags$ul(
           tags$li(
             tags$a(
-              href = "docs/cusum/HELP_en.pdf",
+              href = "docs/cusum/HELP_EN.pdf",
               target = "_blank",
               "Open CUSUM help document — English"
             )
           ),
           tags$li(
             tags$a(
-              href = "docs/cusum/HELP_es.pdf",
+              href = "docs/cusum/HELP_ES.pdf",
               target = "_blank",
               "Abrir documento de ayuda CUSUM — Español"
             )
@@ -159,14 +159,14 @@ helpUI <- function() {
         tags$ul(
           tags$li(
             tags$a(
-              href = "docs/geospatial/HELP_en.pdf",
+              href = "docs/geospatial/HELP_EN.pdf",
               target = "_blank",
               "Open Geospatial help document — English"
             )
           ),
           tags$li(
             tags$a(
-              href = "docs/geospatial/HELP_es.pdf",
+              href = "docs/geospatial/HELP_ES.pdf",
               target = "_blank",
               "Abrir documento de ayuda Geospatial — Español"
             )
