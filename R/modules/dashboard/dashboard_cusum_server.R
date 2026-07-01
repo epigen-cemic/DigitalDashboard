@@ -35,7 +35,14 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
     
     mu_val <- if (identical(input$mu_method, "manual")) {
       req(input$param_mu)
-      input$param_mu
+      req(prepared_cusum_data())
+      
+      unit_mu <- calculate_mu0_from_rate_by_unit(
+        df = prepared_cusum_data(),
+        rate_per_100k = input$param_mu
+      )
+      
+      mean(unit_mu, na.rm = TRUE)
     } else {
       req(prepared_cusum_data())
       unit_mu <- get_phase1_baseline_by_unit(
@@ -128,7 +135,12 @@ dashboard_cusum_server <- function(input, output, session, app_state) {
       start_week <- max(0, max_week_index - window_size)
       
       final_mu <- if (identical(input$mu_method, "manual")) {
-        input$param_mu
+        req(input$param_mu)
+        
+        calculate_mu0_from_rate_by_unit(
+          df = prepared_df,
+          rate_per_100k = input$param_mu
+        )
       } else {
         get_phase1_baseline_by_unit(prepared_df, window_size)
       }

@@ -32,7 +32,7 @@ Use prepared API-POP-compatible delimited files. The file picker lists several e
 | week | Yes | Epidemiological week, 1-53. |
 | level1..level4 | At least one | Geographic hierarchy columns used by the configured level. |
 | n_cases | Yes | Observed cases; aliases cases, case_count, count, n. |
-| population | Required for maps | Population denominator; aliases n_population, pop, denominator. |
+| population | Required for maps and manual mu0 | Population denominator used for prevalence maps and to convert the manual weekly rate per 100,000 into unit-specific expected counts; aliases n_population, pop, denominator. |
 
 Each uploaded file is stored in the current session with its row count, column count, epidemiological range, modification time, and size. New files are active by default.
 
@@ -53,7 +53,7 @@ Each uploaded file is stored in the current session with its row count, column c
 | Locations | Selected by default for all available units. Changes affect CUSUM only in the current implementation. |
 | Year | Year used for geospatial maps and the available week slider. |
 | Map Time Window | Single week or inclusive week range. Range mode enforces at least two weeks when possible. |
-| Expected Frequency | Automatic unit-level baseline or manual fixed expected weekly cases. |
+| Expected Frequency | Automatic unit-level expected count or manual weekly rate per 100,000 converted to a count using each unit's population. |
 | Target ARL0 | Used to display a recommended h. |
 | Relative Risk | Used to calculate k. |
 | h Threshold | CUSUM alarm threshold. |
@@ -118,7 +118,7 @@ The Dashboard exposes two prepared datasets: CUSUM prepared data and Active stan
 | Detection period | Controls the recent CUSUM window. | Not used. |
 | Year | CUSUM preparation uses the available weekly history rather than the map Year selector. | Filters the map data to the selected year. |
 | Week selection | Not controlled by Map Time Window. | Uses the selected single week or inclusive range. |
-| Population | Optional for count CUSUM. | Required for prevalence. |
+| Population | Required for manual mu0; optional for automatic mu0. | Required for prevalence. |
 | Geographic level | Builds CUSUM units at the selected level. | Loads and joins the configured layer for the selected level. |
 
 > **Avoid misinterpretation.** Do not assume a selected Locations subset also clips the maps. The current maps remain a complete level-wide comparison.

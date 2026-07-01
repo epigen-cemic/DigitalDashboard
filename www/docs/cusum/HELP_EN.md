@@ -23,7 +23,7 @@ The map year and week controls are for Geospatial analysis. CUSUM instead uses t
 | Geographic Level | Administrative level used to create independent CUSUM units. |
 | Locations | Selected units to include; an empty selection includes all available units at the chosen level. |
 | Detection Period | Recent number of weeks used for CUSUM monitoring. |
-| Expected Frequency | Automatic unit-specific estimate or manual expected weekly count. |
+| Expected Frequency | Automatic unit-specific expected count or manual weekly rate per 100,000 converted to a count using each unit's population. Population is required in manual mode. |
 | Target ARL0 | Desired in-control average run length, used to recommend h. |
 | Relative Risk | Increase the procedure is designed to detect; used to calculate k. |
 | Calculated k | CUSUM reference value calculated from the expected count and relative risk. |
@@ -70,7 +70,7 @@ An alarm indicates that accumulated positive deviation from the expected weekly 
 | No CUSUM output | Confirm active files, Run Analysis, and that CUSUM outputs are enabled in Display. |
 | Locations appear ignored | Locations affect CUSUM only; confirm the CUSUM plots/tables rather than the maps. |
 | Coverage warning or stop | Inspect Prepared Data and confirm sufficient observed weeks before zero filling. |
-| Manual baseline looks wrong | Enter expected cases per unit per week, not prevalence per 100,000. |
+| Manual baseline looks wrong | Enter the expected weekly rate per 100,000 people. The app converts that rate into expected weekly counts for each analysis unit using population. |
 | Display changed but data did not | Display changes presentation; structural filters require Run Analysis. |
 | CSV values differ from visible decimals | The table is formatted; the download retains full precision. |
 

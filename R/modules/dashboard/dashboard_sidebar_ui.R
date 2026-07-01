@@ -52,9 +52,9 @@ dashboard_sidebar_ui <- function(ns) {
       condition = sprintf("input['%s'] == 'manual'", ns("mu_method")),
       numericInput(
         ns("param_mu"),
-        "Manual μ0",
+        "Reference rate μ0 per 100,000",
         value = 10,
-        min = 0,
+        min = 1,
         width = "100%"
       )
     ),

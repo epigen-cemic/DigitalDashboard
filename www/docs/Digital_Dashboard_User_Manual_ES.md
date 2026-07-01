@@ -32,7 +32,7 @@ Use archivos delimitados compatibles con API-POP. Aunque el selector muestra var
 | week | Sí | Semana epidemiológica, 1-53. |
 | level1..level4 | Al menos una | Jerarquía geográfica usada por el nivel configurado. |
 | n_cases | Sí | Casos observados; alias cases, case_count, count, n. |
-| population | Para mapas | Denominador; alias n_population, pop, denominator. |
+| population | Para mapas y mu0 manual | Denominador usado en los mapas y para convertir la tasa semanal manual por 100.000 en recuentos esperados por unidad; alias n_population, pop, denominator. |
 
 Cada archivo queda en la sesión con filas, columnas, rango epidemiológico, fecha y tamaño. Los nuevos archivos están activos por defecto.
 
@@ -53,7 +53,7 @@ Cada archivo queda en la sesión con filas, columnas, rango epidemiológico, fec
 | Locations | Todas seleccionadas por defecto; actualmente afecta solo CUSUM. |
 | Year | Año para mapas y semanas disponibles. |
 | Map Time Window | Semana única o rango inclusivo; el rango fuerza al menos dos semanas cuando es posible. |
-| Expected Frequency | Línea automática por unidad o recuento semanal manual. |
+| Expected Frequency | Recuento automático por unidad o tasa semanal manual por 100.000 convertida usando la población de cada unidad. |
 | Target ARL0 | Usado para h recomendado. |
 | Relative Risk | Usado para calcular k. |
 | h Threshold | Umbral de alarma. |
@@ -118,7 +118,7 @@ Incluye CUSUM prepared data y Active standardized data, con descargas CSV y filt
 | Detection period | Ventana CUSUM reciente. | No se usa. |
 | Year | Usa el historial semanal disponible, no el selector de mapa. | Filtra al año seleccionado. |
 | Week selection | No usa Map Time Window. | Usa semana o rango. |
-| Population | Opcional. | Obligatoria. |
+| Population | Obligatoria para mu0 manual; opcional para mu0 automático. | Obligatoria. |
 | Geographic level | Construye unidades CUSUM. | Carga la capa configurada. |
 
 > **Evite confusión.** No suponga que Locations recorta los mapas; actualmente los mapas comparan todo el nivel.

@@ -23,7 +23,7 @@ Los controles de año y semana del mapa corresponden a Geospatial. CUSUM usa la 
 | Geographic Level | Nivel administrativo usado para crear unidades CUSUM independientes. |
 | Locations | Unidades incluidas; vacío incluye todas las disponibles del nivel. |
 | Detection Period | Número reciente de semanas de vigilancia. |
-| Expected Frequency | Estimación automática por unidad o recuento semanal esperado manual. |
+| Expected Frequency | Recuento esperado automático por unidad o tasa semanal manual por 100.000 convertida usando la población de cada unidad. La población es obligatoria en modo manual. |
 | Target ARL0 | Longitud media en control utilizada para recomendar h. |
 | Relative Risk | Aumento que se desea detectar; se usa para calcular k. |
 | Calculated k | Valor de referencia calculado con el esperado y el riesgo relativo. |
@@ -70,7 +70,7 @@ Una alarma indica que la desviación positiva acumulada alcanzó h. Es una seña
 | Sin salida CUSUM | Archivos activos, Run Analysis y salidas CUSUM habilitadas en Display. |
 | Locations parece ignorado | Locations afecta CUSUM, no los mapas. |
 | Advertencia de cobertura | Revise Prepared Data y semanas observadas antes del relleno con ceros. |
-| Línea base manual incorrecta | Ingrese casos esperados por unidad y semana, no prevalencia por 100.000. |
+| Línea base manual incorrecta | Ingrese la tasa semanal esperada por 100.000 habitantes. La app convierte esa tasa en conteos esperados semanales para cada unidad de análisis usando la población. |
 | Display cambió pero no los datos | Display cambia presentación; filtros estructurales requieren Run Analysis. |
 | CSV difiere de decimales visibles | La tabla está formateada; la descarga conserva precisión. |
 
