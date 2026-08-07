@@ -1,14 +1,43 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
+type: software
+title: "DigitalDashboard: An integrated platform for CUSUM-based early warning and geospatial disease surveillance"
+abstract: "DigitalDashboard is an integrated R/Shiny application that combines the CUSUM-RAP and Geospatial-RAP workflows in a single interface. It allows users to upload API-Pop-compatible data, apply shared epidemiological and geographic filters, configure CUSUM parameters, and visualise surveillance outputs through early-warning plots, prevalence maps, LISA cluster maps, tables, prepared datasets, and downloadable results. The dashboard supports near real-time monitoring of spatial and temporal patterns in epidemiological data and provides a unified workflow for local public health surveillance and response."
 authors:
-- family-names: "YOUR_NAME_HERE"
-  given-names: "YOUR_NAME_HERE"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-- family-names: "Lisa"
-  given-names: "Mona"
-  orcid: "https://orcid.org/0000-0000-0000-0000"
-title: "DigitalDashboard"
+  - family-names: "Giordano"
+    given-names: "M. E."
+    affiliation: "Laboratorio de Epidemiología Genética, Centro de Educación Médica e Investigaciones Clínicas \"Norberto Quirno\" (UE CEMIC-CONICET)"
+  - family-names: "Gili"
+    given-names: "J. A."
+    affiliation: "Laboratorio de Epidemiología Genética, Centro de Educación Médica e Investigaciones Clínicas \"Norberto Quirno\" (UE CEMIC-CONICET)"
+  - family-names: "López-Camelo"
+    given-names: "J. S."
+    affiliation: "Laboratorio de Epidemiología Genética, Centro de Educación Médica e Investigaciones Clínicas \"Norberto Quirno\" (UE CEMIC-CONICET)"
+  - family-names: "Poletta"
+    given-names: "F. A."
+    email: "fpoletta@cemic.edu.ar"
+    affiliation: "Laboratorio de Epidemiología Genética, Centro de Educación Médica e Investigaciones Clínicas \"Norberto Quirno\" (UE CEMIC-CONICET)"
+contact:
+  - family-names: "Poletta"
+    given-names: "F. A."
+    email: "fpoletta@cemic.edu.ar"
+    affiliation: "Laboratorio de Epidemiología Genética, Centro de Educación Médica e Investigaciones Clínicas \"Norberto Quirno\" (UE CEMIC-CONICET)"
 version: 1.0.0
-doi: 10.5281/zenodo.1234
 date-released: 2026-06-12
+# doi: "10.5281/zenodo.1234567"  # DOI: reemplazar con el DOI real al hacer el release
+license: MIT
 url: "https://github.com/epigen-cemic/DigitalDashboard"
+keywords:
+  - "public health surveillance"
+  - "early warning"
+  - "CUSUM"
+  - "spatial epidemiology"
+  - "disease surveillance dashboard"
+  - "R Shiny"
+  - "epidemiology"
+references:
+  - type: grant
+    title: "Analysis for Action (formerly the Pandemic Preparedness Toolkit)"
+    institution:
+      name: "UK Office for National Statistics (ONS)"
+    notes: "DigitalDashboard was developed at CEMIC, the Argentina Delivery Partner for Analysis for Action. This work was supported by Wellcome (Grant number 226596/Z/22/Z)."
