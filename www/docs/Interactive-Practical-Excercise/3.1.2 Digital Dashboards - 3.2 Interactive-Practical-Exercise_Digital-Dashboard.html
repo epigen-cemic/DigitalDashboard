@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Online Practical Laboratory — Digital Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,600;0,700;1,300&amp;display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:        #0d1117;
+  --bg2:       #161b22;
+  --bg3:       #21262d;
+  --border:    #30363d;
+  --text:      #e6edf3;
+  --muted:     #8b949e;
+  --accent:    #58a6ff;
+  --green:     #3fb950;
+  --yellow:    #d29922;
+  --red:       #f85149;
+  --orange:    #e3722e;
+  --purple:    #bc8cff;
+  --teal:      #39d3c3;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --font-sans: 'IBM Plex Sans', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* ── LAYOUT ───────────────────────────────────────────────── */
+.layout { display: flex; min-height: 100vh; }
+
+/* sidebar */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: 24px 0 40px;
+}
+
+.sidebar-logo {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+.sidebar-logo .badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--accent);
+  color: var(--bg);
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sidebar-logo h2 {
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 8px;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.nav-section { padding: 8px 20px 4px; font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+
+.nav-link {
+  display: block;
+  padding: 6px 20px 6px 28px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all .15s;
+}
+.nav-link:hover { color: var(--text); background: var(--bg3); }
+.nav-link.active { color: var(--accent); border-left-color: var(--accent); background: rgba(88,166,255,.07); }
+.nav-link.sub { padding-left: 40px; font-size: 12px; }
+
+/* main content */
+.main {
+  flex: 1;
+  max-width: 860px;
+  padding: 48px 52px 80px;
+}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  margin-bottom: 52px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--teal);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hero h1 {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.hero h1 span { color: var(--accent); }
+.hero-sub {
+  font-size: 15px;
+  color: var(--muted);
+  max-width: 620px;
+  line-height: 1.7;
+}
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.meta-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── SECTIONS ─────────────────────────────────────────────── */
+.section { margin-bottom: 52px; }
+
+.section-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.tag-blue  { background: rgba(88,166,255,.15); color: var(--accent); }
+.tag-green { background: rgba(63,185,80,.15);  color: var(--green); }
+.tag-teal  { background: rgba(57,211,195,.15); color: var(--teal); }
+.tag-orange{ background: rgba(227,114,46,.15); color: var(--orange); }
+
+h2 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 28px 0 10px;
+}
+h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 20px 0 8px;
+  font-family: var(--font-mono);
+  letter-spacing: .03em;
+}
+
+p { margin-bottom: 14px; color: var(--text); }
+p:last-child { margin-bottom: 0; }
+
+/* ── DIVIDER ──────────────────────────────────────────────── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 40px 0;
+}
+
+/* ── CALLOUT ──────────────────────────────────────────────── */
+.callout {
+  border-left: 3px solid;
+  padding: 14px 18px;
+  border-radius: 0 6px 6px 0;
+  margin: 20px 0;
+  font-size: 14px;
+}
+.callout-blue  { border-color: var(--accent); background: rgba(88,166,255,.07); }
+.callout-green { border-color: var(--green);  background: rgba(63,185,80,.07); }
+.callout-yellow{ border-color: var(--yellow); background: rgba(210,153,34,.07); }
+.callout-red   { border-color: var(--red);    background: rgba(248,81,73,.07); }
+.callout strong { color: var(--text); }
+
+/* ── CODE BLOCK ───────────────────────────────────────────── */
+.code-block {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 16px 0;
+}
+.code-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+.code-header .lang { color: var(--accent); font-weight: 600; }
+pre {
+  padding: 16px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.65;
+  color: var(--text);
+}
+.c-comment { color: var(--muted); font-style: italic; }
+.c-key     { color: var(--purple); }
+.c-str     { color: var(--green); }
+.c-num     { color: var(--orange); }
+.c-fn      { color: var(--accent); }
+
+/* ── TABLE ────────────────────────────────────────────────── */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+thead th {
+  background: var(--bg3);
+  color: var(--muted);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border-bottom: 2px solid var(--border);
+  text-align: left;
+}
+tbody td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: var(--bg3); }
+.td-mono { font-family: var(--font-mono); font-size: 12px; }
+.rr-high { color: var(--red); font-weight: 600; }
+.rr-mid  { color: var(--yellow); font-weight: 600; }
+.rr-low  { color: var(--green); font-weight: 600; }
+
+/* ── STEP BOXES ───────────────────────────────────────────── */
+.steps { display: flex; flex-direction: column; gap: 4px; margin: 20px 0; }
+.step {
+  display: flex;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  align-items: flex-start;
+  transition: border-color .2s;
+}
+.step:hover { border-color: var(--accent); }
+.step-num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--bg);
+  background: var(--accent);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.step-body { flex: 1; }
+.step-title { font-weight: 600; font-size: 14px; margin-bottom: 4px; }
+.step-desc  { font-size: 13px; color: var(--muted); }
+
+/* ── SCHEMA CARD ──────────────────────────────────────────── */
+.schema-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px,1fr));
+  gap: 10px;
+  margin: 16px 0;
+}
+.schema-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.schema-card .col-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.schema-card .col-type {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--yellow);
+  margin-bottom: 6px;
+}
+.schema-card .col-desc { font-size: 12px; color: var(--muted); }
+
+/* ── OUTPUT CARD ──────────────────────────────────────────── */
+.output-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+.output-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.output-icon { font-size: 22px; margin-bottom: 8px; }
+.output-card h5 { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.output-card p  { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* ── SCENARIO BADGE ───────────────────────────────────────── */
+.scenario-row {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+.scenario-card {
+  flex: 1;
+  min-width: 180px;
+  border-radius: 8px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+}
+.sc-green  { border-color: var(--green);  background: rgba(63,185,80,.06); }
+.sc-yellow { border-color: var(--yellow); background: rgba(210,153,34,.06); }
+.sc-red    { border-color: var(--red);    background: rgba(248,81,73,.06); }
+.sc-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.sc-green  .sc-label { color: var(--green); }
+.sc-yellow .sc-label { color: var(--yellow); }
+.sc-red    .sc-label { color: var(--red); }
+.sc-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.sc-body  { font-size: 12px; color: var(--muted); }
+
+/* ── PROGRESS BAR ─────────────────────────────────────────── */
+.part-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+}
+.part-num {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.part-header.p1 .part-num { color: var(--accent); }
+.part-header.p2 .part-num { color: var(--teal); }
+.part-info h2 { font-size: 18px; margin-bottom: 2px; }
+.part-info p  { font-size: 13px; color: var(--muted); margin: 0; }
+
+/* ── INLINE CODE ──────────────────────────────────────────── */
+code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--teal);
+}
+
+/* ── SCROLLBAR ────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .main { padding: 28px 20px 60px; }
+}
+
+
+.callout-teal { border-color: var(--teal); background: rgba(57,211,195,.07); }
+.workflow-note {
+  background: linear-gradient(135deg, rgba(88,166,255,.08), rgba(57,211,195,.06));
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 18px 0;
+}
+.small-muted { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar">
+<div class="sidebar-logo">
+<div class="badge">Digital Dashboard</div>
+<h2>Online Practical<br/>Laboratory</h2>
+</div>
+<div class="nav-section">Overview</div>
+<a class="nav-link active" href="#overview">Introduction</a>
+<a class="nav-link" href="#dataset">Simulated Dataset</a>
+<a class="nav-link" href="#input-structure">Input File Structure</a>
+<a class="nav-link" href="#dashboard-map">Standalone → Dashboard</a>
+<div class="nav-section">Dashboard Workflow</div>
+<a class="nav-link" href="#dashboard-home">Home &amp; Dashboard</a>
+<a class="nav-link sub" href="#workflow-s1">Step 1 · Upload files</a>
+<a class="nav-link sub" href="#workflow-s2">Step 2 · Global filters</a>
+<a class="nav-link sub" href="#workflow-s3">Step 3 · Display</a>
+<a class="nav-link sub" href="#workflow-s4">Step 4 · Run Analysis</a>
+<div class="nav-section">CUSUM Display</div>
+<a class="nav-link" href="#cusum-intro">What is CUSUM?</a>
+<a class="nav-link" href="#cusum-dashboard">Run CUSUM</a>
+<a class="nav-link" href="#cusum-scenarios">Comparing Three Communes</a>
+<a class="nav-link" href="#cusum-outputs">Reading Outputs</a>
+<div class="nav-section">Geospatial Display</div>
+<a class="nav-link" href="#geo-intro">What is LISA?</a>
+<a class="nav-link" href="#geo-dashboard">Run Geospatial</a>
+<a class="nav-link" href="#geo-outputs">Reading Outputs</a>
+<a class="nav-link" href="#geo-interpret">Interpretation Guide</a>
+<div class="nav-section">Shared Outputs</div>
+<a class="nav-link" href="#prepared-data">Prepared Data</a>
+
+</nav>
+<main class="main">
+<div class="hero" id="overview">
+<div class="hero-eyebrow">// WS5.WP1.2 · Digital Dashboard Practical</div>
+<h1>Online Practical<br/><span>Laboratory</span></h1>
+<p class="hero-sub">
+    A hands-on guide to epidemic surveillance with the <strong>Digital Dashboard</strong>.
+    The dashboard brings the former <strong>CUSUM-RAP</strong> and <strong>Geospatial-RAP</strong>
+    workflows into one application: upload once, set common filters once, then choose which
+    analytical display to review.
+  </p>
+<div class="hero-meta">
+<div class="meta-item"><div class="meta-dot" style="background:var(--accent)"></div>R / Shiny dashboard</div>
+<div class="meta-item"><div class="meta-dot" style="background:var(--green)"></div>Simulated CABA dataset</div>
+<div class="meta-item"><div class="meta-dot" style="background:var(--yellow)"></div>52 epidemiological weeks · 2025</div>
+<div class="meta-item"><div class="meta-dot" style="background:var(--purple)"></div>10 communes · 236 census fractions</div>
+</div>
+</div>
+<div class="section" id="dataset">
+<div class="section-tag tag-blue">Dataset</div>
+<h2>Simulated Dataset</h2>
+    <p>
+        We use a simulated dataset based on the real census geography of the
+        <strong>Ciudad Autónoma de Buenos Aires (CABA)</strong>, Argentina.
+        It covers <strong>10 communes</strong>, <strong>236 census fractions</strong>,
+        and <strong>52 epidemiological weeks</strong> of year 2025 — a total of 12,272 rows.
+    </p>
+    <p>
+        Cases were generated using a <strong>Poisson distribution</strong> with a baseline
+        rate (μ₀) of <strong>1 case per 1,000 persons per week</strong> (expected prevalence = 100 per 100,000).
+        Selected communes have an injected outbreak signal starting at a specific week.
+    </p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Commune</th>
+<th>Census Fractions</th>
+<th>Population</th>
+<th>Baseline Rate</th>
+<th>Expected Prev. /100k</th>
+<th>RR</th>
+<th>Outbreak Onset</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>Comuna 2</td><td class="td-mono">25</td><td class="td-mono">160,609</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-low">1.0</td><td>—</td></tr>
+<tr><td>Comuna 5</td><td class="td-mono">22</td><td class="td-mono">192,449</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-low">1.0</td><td>—</td></tr>
+<tr><td>Comuna 6</td><td class="td-mono">21</td><td class="td-mono">201,764</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-low">1.0</td><td>—</td></tr>
+<tr><td>Comuna 7</td><td class="td-mono">24</td><td class="td-mono">213,262</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-low">1.0</td><td>—</td></tr>
+<tr><td>Comuna 10</td><td class="td-mono">19</td><td class="td-mono">171,896</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-low">1.0</td><td>—</td></tr>
+<tr><td>Comuna 11</td><td class="td-mono">22</td><td class="td-mono">201,905</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-low">1.0</td><td>—</td></tr>
+<tr><td>Comuna 12</td><td class="td-mono">22</td><td class="td-mono">235,364</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-high">3.0</td><td>Week 12</td></tr>
+<tr><td>Comuna 13</td><td class="td-mono">29</td><td class="td-mono">262,330</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-mid">2.0</td><td>Week 18</td></tr>
+<tr><td>Comuna 14</td><td class="td-mono">31</td><td class="td-mono">247,252</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-mid">1.5</td><td>Week 20</td></tr>
+<tr><td>Comuna 15</td><td class="td-mono">21</td><td class="td-mono">195,265</td><td class="td-mono">1/1,000</td><td class="td-mono">100</td><td class="rr-mid">1.5</td><td>Week 20</td></tr>
+</tbody>
+</table>
+</div>
+    <div class="callout callout-blue">
+        <strong>💡 Key insight:</strong> Communes 12, 13, 14, and 15 are geographically contiguous in northern CABA.
+        This spatial clustering of outbreaks is exactly what the Geospatial-RAP is designed to detect.
+    </div>
+</div>
+<div class="section" id="input-structure">
+<div class="section-tag tag-teal">Input Format</div>
+<h2>Input File Structure</h2>
+<p>
+The Digital Dashboard uses the same <strong>API-POP-compatible weekly CSV structure</strong> used by
+    the standalone CUSUM and Geospatial tools. For this exercise, <code>level3</code> represents census fraction codes.
+        </p>
+<div class="schema-grid">
+<div class="schema-card">
+<div class="col-name">country</div>
+<div class="col-type">character</div>
+<div class="col-desc">Country name, for example "Argentina"</div>
+</div>
+<div class="schema-card">
+<div class="col-name">level1</div>
+<div class="col-type">character</div>
+<div class="col-desc">Province or first administrative level</div>
+</div>
+<div class="schema-card">
+<div class="col-name">level2</div>
+<div class="col-type">character</div>
+<div class="col-desc">Department / commune level used in this exercise</div>
+</div>
+    <div class="schema-card">
+        <div class="col-name">level3</div>
+        <div class="col-type">integer</div>
+        <div class="col-desc">Census fraction code (INDEC 7 digits)</div>
+    </div>
+    <div class="schema-card">
+        <div class="col-name">week</div>
+        <div class="col-type">integer</div>
+        <div class="col-desc">Epidemiological week (1–52)</div>
+    </div>
+    <div class="schema-card">
+        <div class="col-name">year</div>
+        <div class="col-type">integer</div>
+        <div class="col-desc">Epidemiological year</div>
+    </div>
+    <div class="schema-card">
+        <div class="col-name">n_cases</div>
+        <div class="col-type">integer</div>
+        <div class="col-desc">Suspected cases in that week</div>
+    </div>
+    <div class="schema-card">
+        <div class="col-name">population</div>
+        <div class="col-type">integer</div>
+        <div class="col-desc">Census population (fixed across weeks)</div>
+    </div>
+</div>
+<h4>// Example rows</h4>
+<div class="code-block">
+<div class="code-header"><span class="lang">CSV</span><span>Shown after dashboard ID normalization</span></div>
+<pre>country,level1,level2,level3,week,year,n_cases,population
+Argentina,Ciudad Autonoma de Buenos Aires,Comuna 10,0207001,1,2025,8,6651
+Argentina,Ciudad Autonoma de Buenos Aires,Comuna 10,0207002,1,2025,8,7094
+Argentina,Ciudad Autonoma de Buenos Aires,Comuna 12,0208401,12,2025,31,9341
+Argentina,Ciudad Autonoma de Buenos Aires,Comuna 12,0208402,13,2025,28,8632</pre>
+</div>
+    <div class="callout callout-yellow">
+        <strong>⚠️ Important:</strong> The <code>level3</code> column may lose its leading zero when opened in Excel.
+        The Dashboard automatically restores it using zero-padding rules defined in <code>config.json</code>.
+        Never manually edit the CSV in Excel before uploading.
+    </div>
+</div>
+<div class="section" id="dashboard-map">
+<div class="section-tag tag-orange">Migration</div>
+<h2>What Changed from the Standalone Apps?</h2>
+<p>
+    The practical concepts are unchanged, but the user journey is now centered on the
+    <strong>Dashboard</strong> page instead of two separate applications. Users no longer
+    launch CUSUM-RAP and Geospatial-RAP separately or edit app setup files.
+  </p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Old standalone wording</th><th>Digital Dashboard wording</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>Open CUSUM-RAP / Geospatial-RAP</td><td>Open <strong>Digital Dashboard</strong></td><td>One application hosts both analyses</td></tr>
+<tr><td>Upload API-Pop CSV in each app</td><td>Upload once in the <strong>Dashboard</strong> file panel</td><td>The same active file feeds all displays</td></tr>
+<tr><td>Spatial Unit</td><td><strong>Locations</strong></td><td>Select one or more departments / communes</td></tr>
+<tr><td>Year / week controls inside each app</td><td><strong>Detection period</strong> global filter</td><td>Common time selection for selected outputs</td></tr>
+<tr><td>Run CUSUM / Run Spatial Analysis</td><td><strong>Run Analysis</strong></td><td>One run button uses the current data, filters, and display settings</td></tr>
+<tr><td>Separate output tabs</td><td><strong>Display</strong> selector</td><td>Choose CUSUM, Geospatial, Prepared Data, or table outputs</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr class="divider"/>
+<div id="dashboard-home">
+<div class="part-header p1">
+<div class="part-num">00</div>
+<div class="part-info">
+<h2>Digital Dashboard Workflow</h2>
+<p>Upload once, filter once, then review CUSUM, geospatial, and prepared-data outputs</p>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="section-tag tag-blue">Workflow</div>
+<h2>Recommended Dashboard Workflow</h2>
+<p>
+    Start on the <strong>Home</strong> page to understand the dashboard layout. Then move to
+    <strong>Dashboard</strong>, where the practical analysis is performed.
+  </p>
+<div class="steps">
+<div class="step" id="workflow-s1">
+<div class="step-num">1</div>
+<div class="step-body">
+<div class="step-title">Upload the dashboard CSV</div>
+<div class="step-desc">
+In the Dashboard file panel, upload <code>Input-File_DigitalDashboard_CABA_sim.csv</code>.
+          The Uploaded Files panel should list the file name, number of rows, year-week range,
+          last modified date, and file size. Keep the file active.
+        </div>
+</div>
+</div>
+<div class="step" id="workflow-s2">
+<div class="step-num">2</div>
+<div class="step-body">
+<div class="step-title">Set the global filters</div>
+<div class="step-desc">
+Fill the input panel with the shared surveillance settings:<br/><br/>
+<strong>Geographic level:</strong> <code>Department</code>, because CABA communes are handled as department-level units.<br/>
+<strong>Detection period:</strong> choose the year and week window for the plot or map you want to review.<br/>
+<strong>Locations:</strong> use one commune at a time for the CUSUM teaching comparison; keep all communes available for geospatial maps unless you intentionally want a filtered map.
+        </div>
+</div>
+</div>
+<div class="step" id="workflow-s3">
+<div class="step-num">3</div>
+<div class="step-body">
+<div class="step-title">Choose what to display</div>
+<div class="step-desc">
+Use <strong>Display</strong> to choose the desired output: CUSUM chart/table,
+          Geospatial prevalence map, LISA cluster map/table, Prepared Data, or Output Table.
+          This can be done <strong>before</strong> running the analysis, so the dashboard renders that
+          output when the run finishes, or <strong>after</strong> running the analysis, to switch between
+          available views from the same prepared result. Changing the display does not change the
+          underlying dataset.
+        </div>
+</div>
+</div>
+<div class="step" id="workflow-s4">
+<div class="step-num">4</div>
+<div class="step-body">
+<div class="step-title">Run the analysis</div>
+<div class="step-desc">
+Click <strong>Run Analysis</strong> after changing the active file, input panel, or global filters.
+          The dashboard prepares the active data, applies the selected filters, computes the relevant outputs,
+          and renders the selected plot, table, or map. After a run is complete, you may change
+          <strong>Display</strong> to review another available output without changing the input data.
+        </div>
+</div>
+</div>
+</div>
+<hr class="divider"/>
+<div id="cusum-intro">
+<div class="part-header p1">
+<div class="part-num">01</div>
+<div class="part-info">
+<h2>Temporal Outbreak Detection — CUSUM Display</h2>
+<p>Detect when case counts exceed the expected baseline</p>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="section-tag tag-blue">Concept</div>
+<h2>What is CUSUM?</h2>
+<p>
+<strong>CUSUM</strong> stands for <em>Cumulative Sum</em>. Think of it as a running tally that
+    measures how far current case counts are drifting from what you'd normally expect.
+  </p>
+<p>
+    Imagine you're watching a water tank: CUSUM measures how much water has accumulated
+    <em>above the normal level</em>. A small, steady drip goes unnoticed. But when water
+    starts piling up week after week, CUSUM raises an alarm — even before the tank overflows.
+  </p>
+<div class="callout callout-blue">
+<strong>In plain words:</strong> CUSUM asks "is this week's count too high, considering
+    everything that came before?" It catches subtle, gradual increases that a simple
+    threshold would miss.
+  </div>
+<h3>The three scenarios we will compare</h3>
+<div class="scenario-row">
+<div class="scenario-card sc-green">
+<div class="sc-label">Scenario A — No signal</div>
+<div class="sc-title">Comuna 10</div>
+<div class="sc-body">RR = 1.0 all year. Cases fluctuate randomly around the expected baseline. CUSUM should stay flat and below the alert threshold.</div>
+</div>
+<div class="scenario-card sc-yellow">
+<div class="sc-label">Scenario B — Moderate signal</div>
+<div class="sc-title">Comuna 14</div>
+<div class="sc-body">RR = 1.5 starting Week 20. A 50% increase in cases. CUSUM should accumulate and cross the threshold after a few weeks.</div>
+</div>
+<div class="scenario-card sc-red">
+<div class="sc-label">Scenario C — Strong signal</div>
+<div class="sc-title">Comuna 12</div>
+<div class="sc-body">RR = 3.0 starting Week 12. Cases triple. CUSUM should cross the threshold quickly and stay elevated.</div>
+</div>
+</div>
+</div>
+<div class="section" id="cusum-dashboard">
+<div class="section-tag tag-blue">Dashboard Steps</div>
+<h2>Running the CUSUM Display</h2>
+<div class="steps">
+<div class="step">
+<div class="step-num">1</div>
+<div class="step-body">
+<div class="step-title">Fill the input panel for one commune</div>
+<div class="step-desc">
+Set <strong>Geographic level</strong> to <code>Department</code>.
+          In <strong>Locations</strong>, keep all communes selected / available so the dashboard can analyze them together.
+    The practical comparison still focuses on <em>Comuna 10</em>, <em>Comuna 14</em>, and <em>Comuna 12</em> but these no
+    longer need to be run separately unless you intentionally filter the view to one commune.
+        </div>
+</div>
+</div>
+<div class="step">
+<div class="step-num">2</div>
+<div class="step-body">
+<div class="step-title">Set the CUSUM detection period</div>
+<div class="step-desc">
+Use year <code>2025</code>. For the full teaching comparison, select weeks <code>1–52</code>.
+          The early pre-outbreak weeks are used to understand the baseline, while later weeks show how
+          the CUSUM statistic reacts to sustained excess cases.
+        </div>
+</div>
+</div>
+<div class="step">
+<div class="step-num">3</div>
+<div class="step-body">
+<div class="step-title">Choose the CUSUM display</div>
+<div class="step-desc">
+Set <strong>Display</strong> to the CUSUM chart or CUSUM output table either before clicking
+          <strong>Run Analysis</strong> or after the analysis has already produced results.
+          Review the control chart, observed prevalence chart, and alert table. Repeat the same
+          input-panel steps for the three communes without changing the conceptual interpretation below.
+        </div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="cusum-scenarios">
+<div class="section-tag tag-blue">Scenarios</div>
+<h2>Comparing the Three Communes</h2>
+<h3>Scenario A — Comuna 10 (No signal, RR = 1.0)</h3>
+<p>
+    With <strong>no injected outbreak</strong>, cases fluctuate randomly around 100 per 100,000.
+    The CUSUM statistic should wander close to zero and <strong>never cross the alert threshold</strong>
+    throughout all 52 weeks. Any brief excursion above the threshold would be a false alarm —
+    expected to happen occasionally by chance.
+  </p>
+<div class="callout callout-green">
+<strong>What to look for:</strong> A flat chart with the CUSUM line staying well below the red
+    alert line. Observed prevalence hovering around ~100/100k with no trend.
+  </div>
+<h3>Scenario B — Comuna 14 (Moderate signal, RR = 1.5 from Week 20)</h3>
+<p>
+    Cases increase by 50% starting at Week 20 (observed prevalence rises from ~100 to ~150 per 100,000).
+    The CUSUM statistic should begin accumulating steadily from Week 20 onward and
+    <strong>cross the threshold within a few weeks</strong> — typically around weeks 23–26,
+    depending on random variation.
+  </p>
+<div class="callout callout-yellow">
+<strong>What to look for:</strong> The CUSUM line drifts upward after Week 20 and eventually
+    crosses the alert threshold. The signal is real but takes a few weeks to confirm — this is
+    CUSUM's strength: it accumulates evidence before alarming.
+  </div>
+<h3>Scenario C — Comuna 12 (Strong signal, RR = 3.0 from Week 12)</h3>
+<p>
+    Cases triple starting at Week 12 (observed prevalence rises from ~100 to ~300 per 100,000).
+    The CUSUM statistic should <strong>cross the alert threshold rapidly</strong>, likely within
+    1–2 weeks of onset, and remain elevated for the rest of the year.
+  </p>
+<div class="callout callout-red">
+<strong>What to look for:</strong> A sharp, sustained rise in the CUSUM chart starting at
+    Week 12. The alert is triggered quickly and stays active — a clear epidemic signal.
+  </div>
+</div>
+<div class="section" id="cusum-outputs">
+<div class="section-tag tag-blue">Outputs</div>
+<h2>Reading the CUSUM Outputs</h2>
+<div class="output-grid">
+<div class="output-card">
+<div class="output-icon">📈</div>
+<h5>CUSUM Control Chart</h5>
+<p>Plots the cumulative sum statistic over time. The horizontal red line is the alert threshold (h). When the CUSUM line crosses it, an alert is triggered.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">📊</div>
+<h5>Observed Prevalence Chart</h5>
+<p>Shows weekly prevalence per 100,000. Useful to visually confirm the magnitude of the increase alongside the CUSUM signal.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">🗓️</div>
+<h5>Alert Table</h5>
+<p>Lists every week where the CUSUM exceeded the threshold, including the CUSUM value, observed prevalence, and alert status.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">💾</div>
+<h5>Download Results CSV</h5>
+<p>Exports the full weekly table (CUSUM value, prevalence, alert flag) for further analysis or reporting.</p>
+</div>
+</div>
+<h3>Understanding the CUSUM formula</h3>
+<p>The CUSUM statistic at week <em>t</em> is calculated as:</p>
+<div class="code-block">
+<div class="code-header"><span class="lang">Formula</span><span>Tabular CUSUM (one-sided, upper)</span></div>
+<pre>S(t) = max(0,  S(t-1) + [x(t) - μ₀ - k])
+
+where:
+  x(t)  = observed prevalence at week t
+  μ₀    = expected prevalence (baseline, e.g. 100 per 100k)
+  k     = allowance parameter (e.g. 0.5 × μ₀ = 50)
+          → allows for random variation before accumulating
+  S(t)  = CUSUM statistic (resets to 0 when it would go negative)
+
+Alert is triggered when:  S(t) ≥ h  (e.g. h = 4 × μ₀ = 400)</pre>
+</div>
+<div class="callout callout-blue">
+<strong>In plain words:</strong> Each week, the algorithm subtracts the "allowance" (k) from the excess
+    above baseline. Only consistent, sustained excess accumulates into the score S(t).
+    Random noise stays near zero; a real outbreak keeps pushing S(t) upward until it crosses h.
+  </div>
+</div>
+<hr class="divider"/>
+<div id="geo-intro">
+<div class="part-header p2">
+<div class="part-num">02</div>
+<div class="part-info">
+<h2>Spatial Cluster Detection — Geospatial Display</h2>
+<p>Identify which locations are part of a geographic outbreak cluster</p>
+</div>
+</div>
+</div>
+<div class="section">
+<div class="section-tag tag-teal">Concept</div>
+<h2>What is LISA / Moran's I?</h2>
+<p>
+    CUSUM tells you <em>when</em> something is happening. LISA tells you <em>where</em>
+    — and more importantly, whether high-prevalence areas are surrounded by other
+    high-prevalence areas (a true spatial cluster), or just isolated spikes.
+  </p>
+<p>
+<strong>Moran's I</strong> measures spatial autocorrelation: do neighboring areas
+    tend to have similar values? A value near +1 means "yes, similar areas cluster together."
+    A value near −1 means "high areas are surrounded by low areas."
+  </p>
+<p>
+<strong>LISA</strong> (Local Indicators of Spatial Association) is the local version:
+    it scores every individual commune and classifies it into one of four cluster types.
+  </p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>LISA Category</th><th>Color</th><th>Meaning</th><th>Interpretation</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>High-High</strong></td><td style="color:#d73027">■ Red</td><td>Hot spot</td><td>High prevalence, surrounded by high-prevalence neighbors. Core of an outbreak cluster.</td></tr>
+<tr><td><strong>Low-Low</strong></td><td style="color:#4575b4">■ Blue</td><td>Cold spot</td><td>Low prevalence area surrounded by low-prevalence neighbors. Unaffected cluster.</td></tr>
+<tr><td><strong>High-Low</strong></td><td style="color:#f46d43">■ Orange</td><td>Spatial outlier</td><td>High prevalence but surrounded by low neighbors. Isolated spike, not a cluster.</td></tr>
+<tr><td><strong>Low-High</strong></td><td style="color:#74add1">■ Light Blue</td><td>Spatial outlier</td><td>Low prevalence surrounded by high neighbors. May be under-reported or buffered.</td></tr>
+<tr><td><strong>Not Significant</strong></td><td style="color:#8b949e">■ Grey</td><td>No pattern</td><td>No statistically significant spatial association (p &gt; 0.05).</td></tr>
+</tbody>
+</table>
+</div>
+<div class="callout callout-teal" style="border-color:var(--teal); background:rgba(57,211,195,.07)">
+<strong>Expected result for our dataset:</strong> Communes 12, 13, 14, and 15 (contiguous, all
+    with elevated RR) should appear as <strong>High-High</strong> hot spots in later weeks.
+    Communes 10, 11, 2, 5, 6, 7 (all RR = 1.0) should appear as <strong>Not Significant</strong>
+    or <strong>Low-Low</strong>.
+  </div>
+</div>
+<div class="section" id="geo-dashboard">
+<div class="section-tag tag-teal">Dashboard Steps</div>
+<h2>Running the Geospatial Display</h2>
+<div class="steps">
+<div class="step">
+<div class="step-num" style="background:var(--teal)">1</div>
+<div class="step-body">
+<div class="step-title">Use the same active uploaded file</div>
+<div class="step-desc">
+Keep <code>Input-File_DigitalDashboard_CABA_sim.csv</code> active in the Uploaded Files panel.
+          No second upload is required because the Digital Dashboard reuses the same prepared dataset.
+        </div>
+</div>
+</div>
+<div class="step">
+<div class="step-num" style="background:var(--teal)">2</div>
+<div class="step-body">
+<div class="step-title">Fill the input panel for mapping</div>
+<div class="step-desc">
+Set <strong>Geographic level</strong> to <code>Department</code>.
+          For the clearest LISA map, leave <strong>Locations</strong> as all communes / no single-location restriction,
+          because spatial clustering depends on neighboring areas being present. Demonstrate three detection periods:<br/>
+            • <em>Run A:</em> Week 10 only<br/>
+            • <em>Run B:</em> Week 25 only<br/>
+            • <em>Run C:</em> Weeks 20–52
+        </div>
+</div>
+</div>
+<div class="step">
+<div class="step-num" style="background:var(--teal)">3</div>
+<div class="step-body">
+<div class="step-title">Choose the geospatial display</div>
+<div class="step-desc">
+Set <strong>Display</strong> to the prevalence map, LISA cluster map, or geospatial output table
+          either before clicking <strong>Run Analysis</strong> or after the analysis has already produced results.
+          The dashboard aggregates cases and population to the selected level, calculates prevalence per 100,000,
+          computes the spatial statistics, and renders the selected map or table.
+        </div>
+</div>
+</div>
+</div>
+</div>
+<div class="section" id="geo-outputs">
+<div class="section-tag tag-teal">Outputs</div>
+<h2>Reading the Geospatial Outputs</h2>
+<div class="output-grid">
+<div class="output-card">
+<div class="output-icon">🗺️</div>
+<h5>Prevalence Map (Tab 1)</h5>
+<p>Choropleth map colored Yellow → Orange → Red by prevalence/100k. Click any polygon to see its ID, value, and LISA category in a popup.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">🔴</div>
+<h5>LISA Cluster Map (Tab 2)</h5>
+<p>Categorical map with the five LISA colors. This is the key output: it shows which communes form statistically significant spatial clusters.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">📋</div>
+<h5>Results Table (Tab 3)</h5>
+<p>Sortable table with one row per commune: ID, area name, cases, population, prevalence, p-value, and LISA category. Filterable by column.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">📣</div>
+<h5>Global Moran's I Banner</h5>
+<p>Summary statistic at the top of the page. A significant p-value (green banner) confirms that spatial clustering exists at the global level before inspecting the local map.</p>
+</div>
+</div>
+<h3>Results Table — Column Reference</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Column</th><th>Description</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td class="td-mono">ID</td><td>Spatial unit code</td><td>From the geopackage (zero-padded)</td></tr>
+<tr><td class="td-mono">Area</td><td>Area name</td><td>Commune or department label</td></tr>
+<tr><td class="td-mono">Cases</td><td>Total cases in selected window</td><td>Sum across all weeks and fractions</td></tr>
+<tr><td class="td-mono">Population</td><td>Total population</td><td>Sum of census fractions (deduplicated)</td></tr>
+<tr><td class="td-mono">Result</td><td>Prevalence per 100,000</td><td>Cases / Population × 100,000</td></tr>
+<tr><td class="td-mono">P_value</td><td>LISA significance</td><td>Values ≤ 0.05 are statistically significant</td></tr>
+<tr><td class="td-mono">LISA_cluster</td><td>Cluster category</td><td>High-High, Low-Low, High-Low, Low-High, Not Significant</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="geo-interpret">
+<div class="section-tag tag-teal">Interpretation</div>
+<h2>Interpretation Guide</h2>
+<h3>What should you see across the three runs?</h3>
+<h4>// Run A — Week 10 (pre-outbreak)</h4>
+<p>
+    At Week 10, only Comuna 12's outbreak has not yet started (onset is Week 12).
+    All communes should show prevalence close to 100 per 100,000.
+    The Global Moran's I should be <strong>not significant</strong> (grey banner).
+    The LISA map should be mostly grey (<em>Not Significant</em>) — no spatial structure yet.
+  </p>
+<h4>// Run B — Week 25 (all outbreaks active)</h4>
+<p>
+    By Week 25, all three outbreaks are running (commune 12 since week 12, commune 13 since week 18,
+    communes 14–15 since week 20). You should observe:
+  </p>
+<div class="callout callout-green">
+<strong>Global Moran's I:</strong> Statistically significant (green banner, p &lt; 0.05) —
+    confirming that high-prevalence communes cluster together spatially.
+  </div>
+<div class="callout callout-red">
+<strong>LISA Map:</strong> Communes 12, 13, 14, and 15 should appear in <span style="color:#d73027"><strong>red (High-High)</strong></span>.
+    Communes 2, 5, 6, 7, 10, 11 should appear grey (Not Significant) or <span style="color:#4575b4"><strong>blue (Low-Low)</strong></span>.
+  </div>
+<h4>// Run C — Weeks 20–52 (accumulated signal)</h4>
+<p>
+    Aggregating over a longer period amplifies the signal. The cluster should be even more
+    clearly defined, with stronger LISA statistics and lower p-values for the outbreak communes.
+    This demonstrates how the tool supports cumulative surveillance over a surveillance period,
+    not just single-week snapshots.
+  </p>
+<h3>Key takeaways</h3>
+<div class="steps">
+<div class="step">
+<div class="step-num" style="background:var(--teal)">✓</div>
+<div class="step-body">
+<div class="step-title">CUSUM detects the "when" — Geospatial detects the "where"</div>
+<div class="step-desc">Use both tools together: CUSUM alerts you that something is happening in a commune; Geospatial confirms it is part of a broader spatial cluster and helps identify neighboring communes at risk.</div>
+</div>
+</div>
+<div class="step">
+<div class="step-num" style="background:var(--teal)">✓</div>
+<div class="step-body">
+<div class="step-title">High-High does not mean "certainly an outbreak"</div>
+<div class="step-desc">A significant p-value means the spatial pattern is unlikely to occur by chance. But you must combine it with contextual knowledge (population density, reporting quality, case definitions) before drawing conclusions.</div>
+</div>
+</div>
+<div class="step">
+<div class="step-num" style="background:var(--teal)">✓</div>
+<div class="step-body">
+<div class="step-title">The time window matters</div>
+<div class="step-desc">A single-week snapshot can be noisy. Aggregating over a range of weeks smooths out random variation and reveals sustained patterns. Choose the window based on your epidemiological question.</div>
+</div>
+</div>
+<div class="step">
+<div class="step-num" style="background:var(--teal)">✓</div>
+<div class="step-body">
+<div class="step-title">Population size affects detection power</div>
+<div class="step-desc">Small communes (few census fractions, small population) produce noisier prevalence estimates. A RR = 1.5 signal in a small commune is harder to detect than in a large one.</div>
+</div>
+</div>
+</div>
+</div>
+<hr class="divider"/>
+<div class="section" id="prepared-data">
+<div class="section-tag tag-orange">Shared Output</div>
+<h2>Prepared Data</h2>
+<p>
+The Digital Dashboard includes a Prepared Data view so users can see what the app changed
+    after upload and before analysis. This is especially useful for this practical because it shows
+    repairs such as restoring the missing leading zero in 7-digit <code>level3</code> census fraction codes,
+    standardizing column names, and filling missing weeks when applicable.
+        </p>
+<div class="output-grid">
+<div class="output-card">
+<div class="output-icon">🧾</div>
+<h5>Preparation Log</h5>
+<p>Shows changes such as standardized column names, restored 7-digit geographic IDs, and filled missing weeks.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">🔎</div>
+<h5>Prepared Preview</h5>
+<p>Displays the dataset after dashboard preparation but before analysis outputs are interpreted.</p>
+</div>
+<div class="output-card">
+<div class="output-icon">⬇️</div>
+<h5>Prepared CSV Export</h5>
+<p>Lets users download the prepared version for transparency or reproducibility.</p>
+</div>
+</div>
+</div>
+
+<hr class="divider"/>
+<div style="color:var(--muted); font-size:12px; font-family:var(--font-mono); line-height:2;">
+<div>Unit Geospatial Analysis · WS5.WP1.2</div>
+<div>Dataset: Simulated CABA · Argentina · 2025</div>
+<div>Tool: Digital Dashboard · API-POP-compatible weekly CSV</div>
+</div>
+</main>
+</div>
+<script>
+const links = document.querySelectorAll('.nav-link');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      links.forEach(l => l.classList.remove('active'));
+      const target = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (target) target.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+
+document.querySelectorAll('[id]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

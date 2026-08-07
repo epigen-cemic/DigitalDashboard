@@ -122,23 +122,8 @@ helpUI <- function() {
           tags$li(strong("Relative risk: "), "Risk increase to detect.")
         ),
         h3(),
-        
-        tags$ul(
-          tags$li(
-            tags$a(
-              href = "docs/cusum/HELP_EN.pdf",
-              target = "_blank",
-              "Open CUSUM help document — English"
-            )
-          ),
-          tags$li(
-            tags$a(
-              href = "docs/cusum/HELP_ES.pdf",
-              target = "_blank",
-              "Abrir documento de ayuda CUSUM — Español"
-            )
-          )
-        )
+       
+        tags$ul( tags$li(tags$a(href = "docs/2.3.3 Geospatial Analysis - 1.3. CUSUM RAP User Manual.docx", download ="2.3.3 Geospatial Analysis - 1.3. CUSUM RAP User Manual.docx" ,target = "_self", "Download CUSUM user manual")))
       ),
       
       div(
@@ -156,22 +141,7 @@ helpUI <- function() {
         ),
         h3(),
         
-        tags$ul(
-          tags$li(
-            tags$a(
-              href = "docs/geospatial/HELP_EN.pdf",
-              target = "_blank",
-              "Open Geospatial help document — English"
-            )
-          ),
-          tags$li(
-            tags$a(
-              href = "docs/geospatial/HELP_ES.pdf",
-              target = "_blank",
-              "Abrir documento de ayuda Geospatial — Español"
-            )
-          )
-        )
+        tags$ul(tags$li(tags$a(href = "docs/2.3.3 Geospatial Analysis - 2.3 User-Manual.docx", download ="2.3.3 Geospatial Analysis - 2.3 User-Manual.docx" ,target = "_self", "Download Geospatial user manual")))
       ),
       
       div(
