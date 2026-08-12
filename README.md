@@ -512,6 +512,12 @@ R/geospatial/mod_geospatial.R
 They should remain separate from the new dashboard workflow. The Digital Dashboard should be the primary workflow for new development.
 
 ---
+## Notes
+
+This refactor is intentionally conservative. The mathematical and spatial engines remain separated by domain while the dashboard layer provides a unified user experience.
+
+This lowers the risk of changing validated analysis behavior while still allowing the app to share uploads, filters, layout, styling, and help resources across both tools.
+
 ## Project
 
 **Project:** Analysis for Action  – Argentina Work Package WS5
@@ -527,9 +533,3 @@ Giordano, M. E., Gili, J. A., López-Camelo, J. S.& Poletta, F. A. (2026). Digit
 https://doi.org/10.5281/zenodo.21895670
 
 Citation metadata are also available in the `CITATION.cff` file.
-
-## Notes
-
-This refactor is intentionally conservative. The mathematical and spatial engines remain separated by domain while the dashboard layer provides a unified user experience.
-
-This lowers the risk of changing validated analysis behavior while still allowing the app to share uploads, filters, layout, styling, and help resources across both tools.
