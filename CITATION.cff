@@ -1,4 +1,4 @@
-cff-version: 1.2.0
+cff-version: 1.0.10
 message: "If you use this software, please cite it as below."
 type: software
 title: "DigitalDashboard: An integrated platform for CUSUM-based early warning and geospatial disease surveillance"
@@ -24,9 +24,9 @@ contact:
     orcid: "https://orcid.org/0000-0002-6102-8416"
     email: "fpoletta@cemic.edu.ar"
     affiliation: "Laboratorio de Epidemiología Genética, Centro de Educación Médica e Investigaciones Clínicas \"Norberto Quirno\" (UE CEMIC-CONICET)"
-version: 1.0.0
+version: 1.0.10
 date-released: 2026-06-12
-# doi:
+doi: 10.5281/zenodo.21895670
 license: MIT
 url: "https://github.com/epigen-cemic/DigitalDashboard"
 keywords:
