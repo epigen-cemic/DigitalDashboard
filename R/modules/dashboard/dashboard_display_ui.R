@@ -88,7 +88,7 @@ dashboard_display_ui <- function(ns) {
             h3("Layout preview"),
             p(
               class = "display-preview-note",
-              "This preview summarizes the selected layout. Drag-and-drop positioning is not enabled yet."
+              "This preview summarizes the selected layout."
             ),
             uiOutput(ns("layout_preview"))
           )

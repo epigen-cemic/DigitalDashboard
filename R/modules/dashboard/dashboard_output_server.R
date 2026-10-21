@@ -180,6 +180,44 @@ dashboard_output_server <- function(input, output, session, app_state) {
   has_cusum_results <- reactive({
     !is.null(app_state$cusum_results) && nrow(app_state$cusum_results) > 0
   })
+  # The plot's title, legend, and axis labels need roughly 260 px. The
+  # remaining height reserves at least 10 px for every heatmap location row.
+  heatmap_preview_min_height <- 420L
+  heatmap_preview_chrome_height <- 260L
+  heatmap_min_row_height <- 10L
+  heatmap_preview_max_locations <- 80L
+  heatmap_compact_label_limit <- 22L
+  heatmap_location_count <- reactive({
+    df <- app_state$cusum_results
+    if (is.null(df) || nrow(df) == 0 || !"analysis_unit_id" %in% names(df)) {
+      return(0L)
+    }
+    as.integer(dplyr::n_distinct(df$analysis_unit_id, na.rm = TRUE))
+  })
+  heatmap_preview_available <- reactive({
+    heatmap_location_count() <= heatmap_preview_max_locations
+  })
+  heatmap_preview_height <- reactive({
+    max(
+      heatmap_preview_min_height,
+      heatmap_preview_chrome_height + heatmap_location_count() * heatmap_min_row_height
+    )
+  })
+  heatmap_has_long_labels <- reactive({
+    df <- app_state$cusum_results
+    if (is.null(df) || nrow(df) == 0 || !"analysis_unit_id" %in% names(df)) {
+      return(FALSE)
+    }
+    location_labels <- unique(make_heatmap_location_labels(
+      df,
+      unit_var = "analysis_unit_id"
+    ))
+    location_labels <- location_labels[!is.na(location_labels)]
+    any(nchar(location_labels) > heatmap_compact_label_limit)
+  })
+  heatmap_needs_full_width <- reactive({
+    heatmap_preview_height() > heatmap_preview_min_height || heatmap_has_long_labels()
+  })
   has_geo_results <- reactive({
     !is.null(app_state$geo_results) && nrow(app_state$geo_results) > 0
   })
@@ -286,7 +324,7 @@ dashboard_output_server <- function(input, output, session, app_state) {
     selected <- selected_outputs()
     columns <- layout_columns()
     table_mode <- table_display_mode()
-    if (length(selected) == 0) {
+    if (length(selected) == 0 && !identical(table_mode, "output")) {
       return(
         div(
           class = "layout-preview-empty",
@@ -302,15 +340,28 @@ dashboard_output_server <- function(input, output, session, app_state) {
       lisa_map = "LISA map"
     )
     preview_items <- lapply(selected, function(id) {
+      is_full_width <- identical(id, "cusum_overview") &&
+        isTRUE(heatmap_needs_full_width())
       div(
-        class = "layout-preview-tile",
+        class = if (is_full_width) {
+          "layout-preview-tile layout-preview-tile-full"
+        } else {
+          "layout-preview-tile"
+        },
+        style = if (is_full_width) "grid-column: 1 / -1;" else NULL,
         labels[[id]] %||% id
       )
     })
     if (identical(table_mode, "output")) {
       preview_items <- append(
         preview_items,
-        list(div(class = "layout-preview-tile table-tile", "Results tables"))
+        list(
+          div(
+            class = "layout-preview-tile layout-preview-tile-full table-tile",
+            style = "grid-column: 1 / -1;",
+            "Results tables"
+          )
+        )
       )
     }
     div(
@@ -441,8 +492,8 @@ dashboard_output_server <- function(input, output, session, app_state) {
     )
   })
   output$cusum_overview <- renderPlot({
-    req(app_state$cusum_results)
-    compact <- identical(layout_columns(), "2")
+    req(app_state$cusum_results, heatmap_preview_available())
+    compact <- identical(layout_columns(), "2") && !heatmap_needs_full_width()
     add_dashboard_plot_font(
       plot_cusum_alarms_overview(
         app_state$cusum_results,
@@ -660,11 +711,32 @@ dashboard_output_server <- function(input, output, session, app_state) {
     }
     cards <- list()
     if ("cusum_overview" %in% selected) {
+      overview_available <- isTRUE(heatmap_preview_available())
+      overview_card_class <- if (isTRUE(heatmap_needs_full_width())) {
+        "dashboard-output-grid-item dashboard-output-grid-item-full"
+      } else {
+        "dashboard-output-grid-item"
+      }
+      overview_plot <- if (overview_available) {
+        plotOutput(
+          ns("cusum_overview"),
+          height = paste0(heatmap_preview_height(), "px")
+        )
+      } else {
+        empty_state(
+          "Heatmap preview not shown",
+          sprintf(
+            "This analysis has %s locations. To keep every heatmap row readable, the in-app preview is limited to %s locations. Use Download PNG to view the full heatmap.",
+            format(heatmap_location_count(), big.mark = ","),
+            heatmap_preview_max_locations
+          )
+        )
+      }
       cards <- append(
         cards,
         list(
           div(
-            class = "dashboard-output-grid-item",
+            class = overview_card_class,
             output_card(
               "CUSUM alarm overview",
               tagList(
@@ -672,7 +744,7 @@ dashboard_output_server <- function(input, output, session, app_state) {
                   class = "dashboard-card-actions",
                   download_button_if(has_cusum_results(), "download_cusum_overview_png", "Download PNG")
                 ),
-                plotOutput(ns("cusum_overview"), height = "420px")
+                overview_plot
               )
             )
           )
@@ -840,11 +912,10 @@ dashboard_output_server <- function(input, output, session, app_state) {
     },
     content = function(file) {
       req(app_state$cusum_results)
-      compact <- identical(layout_columns(), "2")
       p <- add_dashboard_plot_font(
         plot_cusum_alarms_overview(
           app_state$cusum_results,
-          compact = compact
+          compact = FALSE
         )
       )
       ggplot2::ggsave(file, plot = p, width = 12, height = 7, dpi = 300, bg = "white")

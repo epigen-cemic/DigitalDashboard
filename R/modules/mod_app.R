@@ -11,25 +11,96 @@ appUI <- function() {
         rel = "stylesheet",
         type = "text/css",
         href = "config.css"
-      )
+      ),
+      tags$script(HTML("
+        (function () {
+          var isLoadingOutput = false;
+          var plotOutputIds = [
+            'dashboard-cusum_overview',
+            'dashboard-cusum_series',
+            'dashboard-cusum_process',
+            'dashboard-prevalence_map',
+            'dashboard-lisa_map'
+          ];
+
+          function isDashboardPlot(event) {
+            return plotOutputIds.indexOf(event.name) !== -1;
+          }
+
+          function showDashboardLoading() {
+            isLoadingOutput = true;
+            $('#dashboard-loading-overlay')
+              .addClass('is-visible')
+              .attr('aria-hidden', 'false');
+          }
+
+          function hideDashboardLoading() {
+            isLoadingOutput = false;
+            $('#dashboard-loading-overlay')
+              .removeClass('is-visible')
+              .attr('aria-hidden', 'true');
+          }
+
+        $(document)
+          .off('shiny:inputchanged.dashboardLoading')
+          .on('shiny:inputchanged.dashboardLoading', function (event) {
+            if (event.name === 'dashboard-run_analysis') {
+              showDashboardLoading();
+            }
+          })
+          .off('shiny:outputinvalidated.dashboardLoading')
+          .on('shiny:outputinvalidated.dashboardLoading', function (event) {
+            if (isDashboardPlot(event)) {
+              showDashboardLoading();
+            }
+          })
+          .off('shiny:idle.dashboardLoading')
+          .on('shiny:idle.dashboardLoading', function () {
+            if (isLoadingOutput) {
+              hideDashboardLoading();
+            }
+          });
+        }());
+      "))
     ),
     
     rap_header("Digital Dashboard"),
     
     app_navbar(),
     
-    tabsetPanel(
-      id = "main_tabs",
-      type = "hidden",
-      
-      tabPanel("home", homeUI()),
-      
-      tabPanel("dashboard", unifiedDashboardUI("dashboard")),
-      
-      tabPanel("display", dashboard_display_ui(NS("dashboard"))),
-      
-      
-      tabPanel("help", helpUI())
+    tagList(
+      tabsetPanel(
+        id = "main_tabs",
+        type = "hidden",
+        
+        tabPanel("home", homeUI()),
+        
+        tabPanel("dashboard", unifiedDashboardUI("dashboard")),
+        
+        tabPanel("display", dashboard_display_ui(NS("dashboard"))),
+        
+        
+        tabPanel("help", helpUI())
+      ),
+      tags$div(
+        id = "dashboard-loading-overlay",
+        class = "dashboard-loading-overlay",
+        role = "status",
+        `aria-live` = "polite",
+        `aria-hidden` = "true",
+        tags$div(
+          class = "dashboard-loading-dialog",
+          tags$div(
+            class = "dashboard-loading-spinner",
+            `aria-hidden` = "true"
+          ),
+          tags$div(class = "dashboard-loading-title", "Loading..."),
+          tags$div(
+            class = "dashboard-loading-message",
+            "Processing data and updating results."
+          )
+        )
+      )
     )
   )
 }

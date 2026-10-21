@@ -59,7 +59,7 @@ homeUI <- function() {
         p(
           "Download buttons appear on each output card only after the corresponding results are available. ",
           "CUSUM plots can be exported as PNG files, result tables can be exported as CSV files, ",
-          "and Geospatial map PNG export is available when the optional screenshot packages are installed."
+          "and Geospatial maps can be exported as PNG files ."
         )
       ),
       
@@ -198,31 +198,3 @@ empty_state <- function(title, text) {
 output_card <- function(title, output_ui, class = "dashboard-output-card") {
   div(class = class, div(class = "output-card-title", title), output_ui)
 }
-
-legacy_cusum_page <- function() {
-  tagList(
-    div(
-      class = "content-wrapper",
-      div(
-        class = "module-title-strip",
-        h2("Legacy CUSUM Analysis")
-      )
-    ),
-    cusumUI("cusum_analysis")
-  )
-}
-
-legacy_geospatial_page <- function() {
-  tagList(
-    div(
-      class = "content-wrapper",
-      div(
-        class = "module-title-strip",
-        h2("Legacy Geospatial Analysis")
-      )
-    ),
-    geospatialUI("geospatial_analysis")
-  )
-}
-
-
